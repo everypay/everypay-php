@@ -1,0 +1,19 @@
+{
+    "name": "everypay/everypay-php",
+    "type": "library",
+    "description": "",
+    "keywords": ["payment", "provider"],
+    "license": "MIT",
+    "homepage": "https://www.everypay.gr",
+    "authors": [
+        {
+            "name": "EveryPay Payment Gateway",
+            "homepage": "https://www.everypay.gr"
+        }
+    ],
+    "autoload": {
+        "psr-0": {
+            "Everypay_": "src/"
+        }
+    }
+}
