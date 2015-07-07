@@ -47,7 +47,7 @@ class Payment extends AbstractResource
      */
     public static function listAll(array $params = array())
     {
-        return parent::listAll(static::RESOURCE_NAME, $params);
+        return parent::_listAll(static::RESOURCE_NAME, $params);
     }
 
     /**
