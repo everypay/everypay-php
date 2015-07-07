@@ -12,12 +12,13 @@
     }
     ],
     "require": {
-        "php": ">=5.2",
-        "ext-curl": "*"
+        "php": ">=5.3.3",
+        "ext-curl": "*",
+        "ext-json": "*"
     },
     "autoload": {
-        "psr-0": {
-            "Everypay": "src/"
+        "psr-4": {
+            "Everypay\\": "src/"
         }
     }
 }

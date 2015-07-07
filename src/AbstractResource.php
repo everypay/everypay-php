@@ -3,28 +3,20 @@
  * EveryPay PHP Library
  */
 
-require_once 'Exception/CurlException.php';
-require_once 'Exception/ApiErrorException.php';
+namespace Everypay;
 
 /**
  * Common methods for all API resources.
  */
-abstract class Everypay_AbstractResource
+abstract class AbstractResource
 {
-    /**
-     * Retrieve API resource name.
-     * 
-     * @return string
-     */
-    abstract public static function getResourceName();
-    
     /**
      * Create a new object.
      * 
      * @param string $resource
      * @param array  $params
      */
-    protected static function _create($resource, array $params)
+    public static function create($resource, array $params)
     {
         $response = self::request(self::getResourceUrl($resource), $params);
         
@@ -37,7 +29,7 @@ abstract class Everypay_AbstractResource
      * @param string $resource
      * @param string|stdClass $token
      */
-    protected static function _retrieve($resource, $token)
+    public static function retrieve($resource, $token)
     {
         if (is_object($token)) {
             $token = $token->token;
@@ -128,9 +120,9 @@ abstract class Everypay_AbstractResource
      * @param string $resource
      * @return string
      */
-    protected static function getResourceUrl($resource)
+    public static function getResourceUrl($resource)
     {
-        return EveryPay::getApiUrl() . '/' . $resource;
+        return Everypay::getApiUrl() . '/' . $resource;
     }
     
     /**
@@ -144,12 +136,12 @@ abstract class Everypay_AbstractResource
     protected static function request($url, array $params = array(), $method = 'POST')
     {
         $curl   = curl_init();
-        $apiKey = EveryPay::getApiKey();
+        $apiKey = Everypay::getApiKey();
         
         curl_setopt($curl, CURLOPT_TIMEOUT, 30);
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, strtoupper($method));
         curl_setopt($curl, CURLOPT_HTTPHEADER, array(
-            'User-Agent: EveryPay PHP Library ' . EveryPay::VERSION
+            'User-Agent: EveryPay PHP Library ' . Everypay::VERSION
         ));
 
         // HTTP Auth Basic
@@ -173,7 +165,7 @@ abstract class Everypay_AbstractResource
         $info     = curl_getinfo($curl);
         
         if (curl_errno($curl)) {
-            throw new Everypay_Exception_CurlException(curl_error($curl));
+            throw new Exception\CurlException(curl_error($curl));
         }
         
         curl_close($curl);

@@ -3,13 +3,12 @@
  * EveryPay PHP Library
  */
 
-require_once 'Everypay/Exception/RuntimeException.php';
-require_once 'Everypay/Exception/InvalidArgumentException.php';
+namespace Everypay;
 
 /**
  * EveryPay configuration class.
  */
-final class EveryPay
+class Everypay
 {
     /**
      * @var string
@@ -21,21 +20,14 @@ final class EveryPay
      * 
      * @var string
      */
-    private static $apiKey = null;
+    protected static $apiKey = null;
     
     /**
      * EveryPay API url.
      * 
      * @var string
      */
-    private static $apiUrl = 'http://api.everypay.local';
-    
-    /**
-     * Whether or not to throw an exception if API has returned an error.
-     * 
-     * @var boolean 
-     */
-    private static $throwExceptions = true;
+    protected static $apiUrl = 'https://api.everypay.gr';
     
     /**
      * Check for needed requirements.
@@ -46,29 +38,12 @@ final class EveryPay
         
         foreach ($extensions as $extension) {
             if (!extension_loaded($extension)) {
-                throw new Everypay_Exception_RuntimeException(
+                throw new Exception\RuntimeException(
                     'You need the PHP ' . $extension
                     . ' extension in order to use EveryPay PHP Library'
                 );
             }
         }
-    }
-    
-    /**
-     * Set the throwExceptions flag and retrieve current status
-     *
-     * Set whether API errors should throw an exception.
-     *
-     * @param boolean $flag Defaults to null (return flag state)
-     * @return boolean
-     */
-    public static function throwExceptions($flag = null)
-    {
-        if ($flag !== null) {
-            self::$throwExceptions = (bool) $flag;
-        }
-
-        return self::$throwExceptions;
     }
     
     /**
@@ -90,8 +65,8 @@ final class EveryPay
     public static function getApiKey()
     {
         if (self::$apiKey === null) {
-            throw new Everypay_Exception_RuntimeException(
-                "You must set first an API key in order to continue."
+            throw new Exception\RuntimeException(
+                "You must set first an API key."
             );
         }
         
@@ -109,7 +84,7 @@ final class EveryPay
         $apiUrl = filter_var($url, FILTER_VALIDATE_URL);
         
         if (!$apiUrl) {
-            throw new Everypay_Exception_InvalidArgumentException(
+            throw new Exception\InvalidArgumentException(
                 'API URL should be a valid url'
             );
         }

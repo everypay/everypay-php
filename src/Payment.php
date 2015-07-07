@@ -3,12 +3,12 @@
  * EveryPay PHP Library
  */
 
-require_once 'AbstractResource.php';
+namespace Everypay;
 
 /**
- * Payments resource class.
+ * Payment resource class.
  */
-class Everypay_Payments extends Everypay_AbstractResource
+class Payment extends AbstractResource
 {
     /**
      * API resource name.
@@ -18,14 +18,6 @@ class Everypay_Payments extends Everypay_AbstractResource
     const RESOURCE_NAME = 'payments';
     
     /**
-     * {@inheritdoc}
-     */
-    public static function getResourceName()
-    {
-        return self::RESOURCE_NAME;
-    }
-    
-    /**
      * Create a new payment object.
      * 
      * @param array $params
@@ -33,7 +25,7 @@ class Everypay_Payments extends Everypay_AbstractResource
      */
     public static function create(array $params)
     {
-        return parent::_create(self::getResourceName(), $params);
+        return parent::create(static::RESOURCE_NAME, $params);
     }
     
     /**
