@@ -20,5 +20,10 @@
         "psr-4": {
             "Everypay\\": "src/"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Everypay\\": "tests/"
+        }
     }
 }

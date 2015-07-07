@@ -36,7 +36,7 @@ class Payment extends AbstractResource
      */
     public static function retrieve($token)
     {
-        return parent::_retrieve(self::getResourceName(), $token);
+        return parent::retrieve(static::RESOURCE_NAME, $token);
     }
 
     /**
@@ -47,7 +47,7 @@ class Payment extends AbstractResource
      */
     public static function listAll(array $params = array())
     {
-        return parent::_listAll(self::getResourceName(), $params);
+        return parent::listAll(static::RESOURCE_NAME, $params);
     }
 
     /**
@@ -62,7 +62,7 @@ class Payment extends AbstractResource
             $token = $token->token;
         }
 
-        $url      = self::getResourceUrl(self::getResourceName()) . '/refund/' . $token;
+        $url      = self::getResourceUrl(static::RESOURCE_NAME) . '/refund/' . $token;
         $response = self::request($url, $params);
 
         return self::handleResponse($response);
@@ -77,7 +77,7 @@ class Payment extends AbstractResource
     public static function delete($token)
     {
         throw new Exception\RuntimeException(
-            'Resource ' . ucfirst(self::getResourceName()) .
+            'Resource ' . ucfirst(static::RESOURCE_NAME) .
             ' does not support method ' . __METHOD__
         );
     }
@@ -92,7 +92,7 @@ class Payment extends AbstractResource
     public static function update($token, array $params)
     {
         throw new Exception\RuntimeException(
-            'Resource ' . ucfirst(self::getResourceName()) .
+            'Resource ' . ucfirst(static::RESOURCE_NAME) .
             ' does not support method ' . __METHOD__
         );
     }
