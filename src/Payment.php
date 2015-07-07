@@ -12,14 +12,14 @@ class Payment extends AbstractResource
 {
     /**
      * API resource name.
-     * 
+     *
      * @var string
      */
     const RESOURCE_NAME = 'payments';
-    
+
     /**
      * Create a new payment object.
-     * 
+     *
      * @param array $params
      * @return stdClass
      */
@@ -27,10 +27,10 @@ class Payment extends AbstractResource
     {
         return parent::create(static::RESOURCE_NAME, $params);
     }
-    
+
     /**
      * Retrieve an existing payment based on his token.
-     * 
+     *
      * @param string|stdClass $token
      * @return stdClass
      */
@@ -38,10 +38,10 @@ class Payment extends AbstractResource
     {
         return parent::_retrieve(self::getResourceName(), $token);
     }
-    
+
     /**
      * Get a list with payment objects.
-     * 
+     *
      * @param array $params
      * @return array
      */
@@ -49,10 +49,10 @@ class Payment extends AbstractResource
     {
         return parent::_listAll(self::getResourceName(), $params);
     }
-    
+
     /**
      * Refund a payment.
-     * 
+     *
      * @param type $token
      * @param array $params
      */
@@ -61,38 +61,38 @@ class Payment extends AbstractResource
         if (is_object($token)) {
             $token = $token->token;
         }
-        
+
         $url      = self::getResourceUrl(self::getResourceName()) . '/refund/' . $token;
         $response = self::request($url, $params);
-        
+
         return self::handleResponse($response);
     }
-    
+
     /**
      * Not avalable for this resource.
-     * 
+     *
      * @param array $params
      * @throws Everypay_Exception_RuntimeException
      */
     public static function delete($token)
     {
-        throw new Everypay_Exception_RuntimeException(
-            'Resource ' . ucfirst(self::getResourceName()) . 
+        throw new Exception\RuntimeException(
+            'Resource ' . ucfirst(self::getResourceName()) .
             ' does not support method ' . __METHOD__
         );
     }
-    
+
     /**
      * Not avalable for this resource.
-     * 
+     *
      * @param string|stdClass
      * @param array $params
      * @throws Everypay_Exception_RuntimeException
      */
     public static function update($token, array $params)
     {
-        throw new Everypay_Exception_RuntimeException(
-            'Resource ' . ucfirst(self::getResourceName()) . 
+        throw new Exception\RuntimeException(
+            'Resource ' . ucfirst(self::getResourceName()) .
             ' does not support method ' . __METHOD__
         );
     }

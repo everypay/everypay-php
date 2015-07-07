@@ -3,20 +3,20 @@
  * EveryPay PHP Library
  */
 
-require_once 'AbstractResource.php';
+namespace Everypay;
 
 /**
  * Customers resource class.
  */
-class Everypay_Customers extends Everypay_AbstractResource
+class Customers extends AbstractResource
 {
     /**
      * API resource name.
-     * 
+     *
      * @var string
      */
     const RESOURCE_NAME = 'customers';
-    
+
     /**
      * {@inheritdoc}
      */
@@ -24,10 +24,10 @@ class Everypay_Customers extends Everypay_AbstractResource
     {
         return self::RESOURCE_NAME;
     }
-    
+
     /**
      * Create a new customer object.
-     * 
+     *
      * @param array $params
      * @return stdClass
      */
@@ -35,10 +35,10 @@ class Everypay_Customers extends Everypay_AbstractResource
     {
         return parent::_create(self::getResourceName(), $params);
     }
-    
+
     /**
      * Retrieve an existing customer based on his token.
-     * 
+     *
      * @param string|stdClass $token
      * @return stdClass
      */
@@ -46,10 +46,10 @@ class Everypay_Customers extends Everypay_AbstractResource
     {
         return parent::_retrieve(self::getResourceName(), $token);
     }
-    
+
     /**
      * Get a list with customer objects.
-     * 
+     *
      * @param array $params
      * @return array
      */
@@ -57,10 +57,10 @@ class Everypay_Customers extends Everypay_AbstractResource
     {
         return parent::_listAll(self::getResourceName(), $params);
     }
-    
+
     /**
      * Update an existing customer.
-     * 
+     *
      * @param string|stdClass $token
      * @param array $params
      * @return stdClass
@@ -69,10 +69,10 @@ class Everypay_Customers extends Everypay_AbstractResource
     {
         return parent::_update(self::getResourceName(), $token, $params);
     }
-    
+
     /**
      * Delete a customer.
-     * 
+     *
      * @param string|stdClass $token
      * @return stdClass
      */
