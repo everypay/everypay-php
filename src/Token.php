@@ -6,16 +6,16 @@
 namespace Everypay;
 
 /**
- * Customers resource class.
+ * Token resource class.
  */
-class Customers extends AbstractResource
+class Token extends AbstractResource
 {
     /**
      * API resource name.
      *
      * @var string
      */
-    const RESOURCE_NAME = 'customers';
+    const RESOURCE_NAME = 'tokens';
 
     /**
      * {@inheritdoc}
@@ -26,7 +26,7 @@ class Customers extends AbstractResource
     }
 
     /**
-     * Create a new customer object.
+     * Create a new card token object.
      *
      * @param array $params
      * @return stdClass
@@ -37,7 +37,7 @@ class Customers extends AbstractResource
     }
 
     /**
-     * Retrieve an existing customer based on his token.
+     * Retrieve an existing card token.
      *
      * @param string|stdClass $token
      * @return stdClass
@@ -48,36 +48,44 @@ class Customers extends AbstractResource
     }
 
     /**
-     * Get a list with customer objects.
+     * Not available for this resource.
      *
      * @param array $params
-     * @return array
+     * @throws Everypay\Exception\RuntimeException
      */
     public static function listAll(array $params = array())
     {
-        return parent::_listAll(self::getResourceName(), $params);
+        throw new Exception\RuntimeException(
+            'Resource ' . ucfirst(self::getResourceName()) .
+            ' does not support method ' . __METHOD__
+        );
     }
 
     /**
-     * Update an existing customer.
+     * Not avalable for this resource.
      *
-     * @param string|stdClass $token
      * @param array $params
-     * @return stdClass
+     * @throws Everypay\Exception\RuntimeException
      */
     public static function update($token, array $params)
     {
-        return parent::_update(self::getResourceName(), $token, $params);
+        throw new Exception\RuntimeException(
+            'Resource ' . ucfirst(self::getResourceName()) .
+            ' does not support method ' . __METHOD__
+        );
     }
 
     /**
-     * Delete a customer.
+     * Not avalable for this resource.
      *
-     * @param string|stdClass $token
-     * @return stdClass
+     * @param array $params
+     * @throws Everypay\Exception\RuntimeException
      */
     public static function delete($token)
     {
-        return parent::_delete(self::getResourceName(), $token);
+        throw new Exception\RuntimeException(
+            'Resource ' . ucfirst(self::getResourceName()) .
+            ' does not support method ' . __METHOD__
+        );
     }
 }

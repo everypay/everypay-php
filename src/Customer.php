@@ -6,16 +6,16 @@
 namespace Everypay;
 
 /**
- * Tokens resource class.
+ * Customer resource class.
  */
-class Tokens extends AbstractResource
+class Customer extends AbstractResource
 {
     /**
      * API resource name.
      *
      * @var string
      */
-    const RESOURCE_NAME = 'tokens';
+    const RESOURCE_NAME = 'customers';
 
     /**
      * {@inheritdoc}
@@ -26,7 +26,7 @@ class Tokens extends AbstractResource
     }
 
     /**
-     * Create a new card token object.
+     * Create a new customer object.
      *
      * @param array $params
      * @return stdClass
@@ -37,7 +37,7 @@ class Tokens extends AbstractResource
     }
 
     /**
-     * Retrieve an existing card token.
+     * Retrieve an existing customer based on his token.
      *
      * @param string|stdClass $token
      * @return stdClass
@@ -48,44 +48,36 @@ class Tokens extends AbstractResource
     }
 
     /**
-     * Not avalable for this resource.
+     * Get a list with customer objects.
      *
      * @param array $params
-     * @throws Everypay_Exception_RuntimeException
+     * @return array
      */
     public static function listAll(array $params = array())
     {
-        throw new Exception\RuntimeException(
-            'Resource ' . ucfirst(self::getResourceName()) .
-            ' does not support method ' . __METHOD__
-        );
+        return parent::_listAll(self::getResourceName(), $params);
     }
 
     /**
-     * Not avalable for this resource.
+     * Update an existing customer.
      *
+     * @param string|stdClass $token
      * @param array $params
-     * @throws Everypay_Exception_RuntimeException
+     * @return stdClass
      */
     public static function update($token, array $params)
     {
-        throw new Exception\RuntimeException(
-            'Resource ' . ucfirst(self::getResourceName()) .
-            ' does not support method ' . __METHOD__
-        );
+        return parent::_update(self::getResourceName(), $token, $params);
     }
 
     /**
-     * Not avalable for this resource.
+     * Delete a customer.
      *
-     * @param array $params
-     * @throws Everypay_Exception_RuntimeException
+     * @param string|stdClass $token
+     * @return stdClass
      */
     public static function delete($token)
     {
-        throw new Exception\RuntimeException(
-            'Resource ' . ucfirst(self::getResourceName()) .
-            ' does not support method ' . __METHOD__
-        );
+        return parent::_delete(self::getResourceName(), $token);
     }
 }

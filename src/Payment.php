@@ -72,7 +72,7 @@ class Payment extends AbstractResource
      * Not avalable for this resource.
      *
      * @param array $params
-     * @throws Everypay_Exception_RuntimeException
+     * @throws Everypay\Exception\RuntimeException
      */
     public static function delete($token)
     {
@@ -87,7 +87,7 @@ class Payment extends AbstractResource
      *
      * @param string|stdClass
      * @param array $params
-     * @throws Everypay_Exception_RuntimeException
+     * @throws Everypay\Exception\RuntimeException
      */
     public static function update($token, array $params)
     {
