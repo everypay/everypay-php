@@ -24,9 +24,9 @@ class Uri implements UriInterface
 
     private $uriString;
 
-    public function __construct($url)
+    public function __construct($uri)
     {
-        $this->parse_url($url);
+        $this->parseUrl($uri);
     }
 
     public function __clone()
@@ -34,32 +34,45 @@ class Uri implements UriInterface
         $this->uriString = null;
     }
 
-    protected function parse_url($url)
+    protected function parseUrl($uri)
     {
-        $parts = parse_url($url);
+        $parts = $this->extractPartsFromUri($uri);
 
         $this->scheme = $parts['scheme'];
 
         $this->host = $parts['host'];
 
-        $this->port = isset($parts['port'])
-            ? $parts['port']
-            : ($parts['scheme'] == 'https' ? 443 : 80);
+        $this->port = $parts['port'];
 
-        $user = isset($parts['user']) ? $parts['user'] : null;
+        $user = $parts['user'];
 
-        $pass = isset($parts['pass']) ? $parts['pass'] : null;
+        $pass = $parts['pass'];
 
         $this->user = $user . ($pass ? ':'.$pass : null);
 
-        $this->path = isset($parts['path'])
-            ? ((strlen($parts['path'])-1)==strrpos($parts['path'],'/') ? substr($parts['path'],0,-1) : $parts['path'])
-            : null;
+        $this->path = ((strlen($parts['path'])-1) == strrpos($parts['path'], '/') ? substr($parts['path'],0,-1) : $parts['path']);
 
-        $this->query = isset($parts['query']) ? $parts['query'] : null;
+        $this->query = $parts['query'];
 
-        $this->fragment = isset($parts['fragment']) ? $parts['fragment'] : null;
+        $this->fragment = $parts['fragment'];
+    }
 
+    private function extractPartsFromUri($uri)
+    {
+        $default = array(
+            'scheme'    => 'http',
+            'host'      => null,
+            'port'      => null,
+            'user'      => null,
+            'pass'      => null,
+            'path'      => '',
+            'query'     => '',
+            'fragment'  => ''
+        );
+
+        $parts = parse_url($uri);
+
+        return array_merge($default, $parts);
     }
 
     public function withScheme($scheme)
@@ -168,10 +181,10 @@ class Uri implements UriInterface
         }
         $this->uriString = $this->scheme . "://" .
             $this->host .
-            ($this->port==80 || $this->port==443?null:":".$this->port) .
-            (isset($this->path)?"/".$this->path:null) .
-            (isset($this->query)?"?".$this->query:null) .
-            (isset($this->fragment)?"#".$this->fragment:null);
+            ($this->port ? ":".$this->port : null) .
+            ($this->path ?: null) .
+            ($this->query ? "?".$this->query : null) .
+            ($this->fragment ? "#".$this->fragment : null);
 
         return $this->uriString;
     }

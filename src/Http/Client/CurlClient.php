@@ -23,8 +23,6 @@ class CurlClient implements ClientInterface
 
     private $options = array();
 
-    private $port;
-
     public function send(RequestInterface $request)
     {
         $url     = $this->resolveUrl($request);
@@ -73,7 +71,7 @@ class CurlClient implements ClientInterface
 
     public function getOption($option)
     {
-        return array_key_exists($options, $this->options)
+        return array_key_exists($option, $this->options)
             ? $this->options[$option]
             : false;
     }
@@ -115,11 +113,9 @@ class CurlClient implements ClientInterface
 
     private function resolveResponseHeaders($headers)
     {
-        if (strpos($headers, self::UNIX_NEWLINE)) {
-            $newLine = self::UNIX_NEWLINE;
-        } else {
-            $newLine = self::WINDOWS_NEWLINE;
-        }
+        $newLine = strpos($headers, self::UNIX_NEWLINE)
+            ? self::UNIX_NEWLINE
+            : self::WINDOWS_NEWLINE;
 
         $headerArray = array();
         $parts = explode($newLine, $headers);
@@ -127,7 +123,7 @@ class CurlClient implements ClientInterface
             $part = trim(substr($part, 0, -1));
         });
         $headers = array_filter($parts, 'strlen');
-        $statusHeader = array_shift($headers);
+        array_shift($headers);
         foreach ($headers as $header) {
             $info = explode(': ', $header, 2);
             $headerArray[$info[0]] = explode(', ', $info[1]);
