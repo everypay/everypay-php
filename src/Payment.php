@@ -20,8 +20,8 @@ class Payment extends AbstractResource
     /**
      * Create a new payment object.
      * Available params are:
-     * For direct payment with credit / debit cards, card info are required.
      * - amount: The amount in cents for the payment. [Required]
+     * For direct payment with credit / debit cards, card info are required.
      * - card_number: A valid credit /debit card number. [Required]
      * - expiration_month: Integer representation of month. [Required]
      * - expiration_month: Integer represantation of a valid expiration year. [Required]
