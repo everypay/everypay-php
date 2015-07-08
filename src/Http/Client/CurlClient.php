@@ -81,19 +81,6 @@ class CurlClient implements ClientInterface
         $this->options = array_replace($this->options, $options);
     }
 
-    public function createStreamFromArray(array $params)
-    {
-        return http_build_query($params, null, '&');
-        $string = "";
-        foreach ($params as $key => $value) {
-            $string .= $key . '=' . urlencode(trim($value)) . '&';
-        }
-
-        $string = rtrim($string, "&");
-
-        return $string;
-    }
-
     protected function resolveResponse($result, $info)
     {
         $statusCode     = $info['http_code'];

@@ -34,7 +34,7 @@ class CurlClientTest extends \PHPUnit_Framework_TestCase
         $uri = 'http://www.httpbin.org/post';
         $payload = array('foo' => 'bar');
 
-        $stream = $this->client->createStreamFromArray($payload);
+        $stream = $this->createStringFromArray($payload);
 
         $request = $this->createRequest($uri, ClientInterface::METHOD_POST);
         $request = $request->withBody($stream);
@@ -60,5 +60,10 @@ class CurlClientTest extends \PHPUnit_Framework_TestCase
         $string = $response->getBody();
 
         return json_decode($string, true);
+    }
+
+    private function createStringFromArray(array $params)
+    {
+        return http_build_query($params, null, '&');
     }
 }

@@ -18,14 +18,6 @@ class Token extends AbstractResource
     const RESOURCE_NAME = 'tokens';
 
     /**
-     * {@inheritdoc}
-     */
-    public static function getResourceName()
-    {
-        return self::RESOURCE_NAME;
-    }
-
-    /**
      * Create a new card token object.
      *
      * @param array $params
@@ -33,18 +25,7 @@ class Token extends AbstractResource
      */
     public static function create(array $params)
     {
-        return parent::_create(self::getResourceName(), $params);
-    }
-
-    /**
-     * Retrieve an existing card token.
-     *
-     * @param string|stdClass $token
-     * @return stdClass
-     */
-    public static function retrieve($token)
-    {
-        return parent::_retrieve(self::getResourceName(), $token);
+        return parent::create($params);
     }
 
     /**

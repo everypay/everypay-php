@@ -29,6 +29,10 @@ class Everypay
      */
     protected static $apiUrl = 'https://api.everypay.gr';
 
+    protected static $testApiUrl = 'https://sandbox.everypay.gr';
+
+    public static $isTest = false;
+
     /**
      * Check for needed requirements.
      *
@@ -101,6 +105,13 @@ class Everypay
      */
     public static function getApiUrl()
     {
-        return self::$apiUrl;
+        return self::$isTest
+            ? self::$testApiUrl
+            : self::$apiUrl;
+    }
+
+    public function throwExceptions()
+    {
+        return false;
     }
 }

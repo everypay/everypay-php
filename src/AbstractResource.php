@@ -15,88 +15,129 @@ abstract class AbstractResource
 {
     private static $client;
 
-    /**
-     * Create a new object.
-     *
-     * @param string $resource
-     * @param array  $params
-     */
-    public static function create($resource, array $params)
-    {
-        $response = self::request(self::getResourceUrl($resource), $params);
+    private static $actions = array(
+        'create',
+        'retrieve',
+        'listAll',
+        'refund',
+        'delete'
+    );
 
-        return self::handleResponse($response);
-    }
-
-    /**
-     * Retrieve an existing object based on his token.
-     *
-     * @param string $resource
-     * @param string|stdClass $token
-     */
-    public static function retrieve($resource, $token)
-    {
-        if (is_object($token)) {
-            $token = $token->token;
-        }
-
-        $url      = self::getResourceUrl($resource) . '/' . $token;
-        $response = self::request($url, array(), 'GET');
-
-        return self::handleResponse($response);
-    }
+    private static $resources = array(
+        'tokens',
+        'payments',
+        'customers'
+    );
 
     /**
-     * List all objects for a resource.
+     * Create a new resource object.
+     * See Resource class for more input info.
      *
-     * @param string $resource
      * @param array $params
      * @return stdClass
      */
-    protected static function _listAll($resource, array $params = array())
+    public static function create(array $params)
     {
-        $response = self::request(self::getResourceUrl($resource), $params, 'GET');
-
-        return self::handleResponse($response);
+        return self::invoke(__FUNCTION__, static::RESOURCE_NAME, $params);
     }
 
     /**
-     * Update an object based on his token.
+     * Retrieve an existing resource based on its token.
      *
-     * @param string $resource
+     * @param string|stdClass $token A valid resource token returned from a
+     *                               successful resource creation.
+     * @return stdClass
+     */
+    public static function retrieve($token)
+    {
+        $params = array('token_id' => $token);
+        return self::invoke(__FUNCTION__, static::RESOURCE_NAME, $params);
+    }
+
+    /**
+     * Get a collection of given resource objects by applying some filters.
+     * Filters are optionals and include:
+     * - count: The number of objects to returns. Availabe range is 1 - 20.
+     * - offset: The offset of collection to return. Useful for pagination.
+     * - date_from: Return objects that created after that date.
+     *   Format: YYYY-mm-dd
+     * - date_to: Return objects that created before that date.
+     *   Format: YYYY-mm-dd
+     *
+     * @param array $filters Filter options.
+     * @return stdClass
+     */
+    public static function listAll(array $filters = array())
+    {
+        return self::invoke(__FUNCTION__, static::RESOURCE_NAME, $filters);
+    }
+
+    /**
+     * Update an existing resource.
+     *
      * @param string|stdClass $token
      * @param array $params
      * @return stdClass
      */
-    protected static function _update($resource, $token, array $params)
+    public static function update($token, array $params)
     {
-        if (is_object($token)) {
-            $token = $token->token;
-        }
-
-        $url      = self::getResourceUrl($resource) . '/' . $token;
-        $response = self::request($url, $params);
-
-        return self::handleResponse($response);
+        $params['token_id'] = $token;
+        return self::invoke(__FUNCTION__, static::RESOURCE_NAME, $params);
     }
 
     /**
-     * Delete an object.
+     * Delete a resource.
      *
-     * @param string $resource
      * @param string|stdClass $token
      * @return stdClass
      */
-    protected static function _delete($resource, $token)
+    public static function delete($token)
     {
-        if (is_object($token)) {
-            $token = $token->token;
+        $params = array('token_id' => $token);
+        return parent::invoke(__FUNCTION__, static::RESOURCE_NAME, $params);
+    }
+
+    public static function setClient(ClientInterface $client)
+    {
+        self::$client = $client;
+    }
+
+    public function getClient()
+    {
+        return self::$client;
+    }
+
+    protected static function invoke($action, $resourceName, array $params = array())
+    {
+        if (!in_array($action, self::$actions)) {
+            throw new Exception\InvalidArgumentException(sprintf("Action %s is not exists", $action));
         }
 
-        $url      = self::getResourceUrl($resource) . '/' . $token;
-        $response = self::request($url, array(), 'DELETE');
+        if (!in_array($resourceName, self::$resources)) {
+            throw new Exception\InvalidArgumentException(sprintf("Resource %s is not exists", $resourceName));
+        }
 
-        return self::handleResponse($response);
+        $options = array(
+            'resource' => $resourceName,
+            'api_key'  => Everypay::getApiKey(),
+            'api_uri'  => Everypay::getApiUrl(),
+        );
+
+        $options = array_merge($params, $options);
+        $actionClass = 'Everypay\\Action\\' . (ucwords($action));
+        $actionInstance = new $actionClass($options);
+        $request = $actionInstance->__invoke();
+        return self::handleResponse(self::createClient()->send($request));
+    }
+
+    private static function createClient()
+    {
+        $client = self::getClient() ?: new CurlClient();
+        $client->setOption(CurlClient::TIMEOUT, 30);
+        $client->setOption(CurlClient::USER_AGENT, 'EveryPay PHP Library ' . Everypay::VERSION);
+        $client->setOption(CurlClient::SSL_VERIFY_PEER, false);
+
+        return $client;
     }
 
     /**
@@ -108,6 +149,15 @@ abstract class AbstractResource
      */
     protected static function handleResponse($response)
     {
+        $contentType = $response->getHeaderLine('Content-Type');
+        if (stripos($contentType, 'application/json') === false) {
+            throw new Exception\CurlException(
+                'The returned response is not in json format'
+            );
+        }
+
+        $response = json_decode($response->getBody());
+
         if (isset($response->error->code)) {
             if (EveryPay::throwExceptions()) {
                 throw new Everypay_Exception_ApiErrorException(
@@ -117,59 +167,5 @@ abstract class AbstractResource
         }
 
         return $response;
-    }
-
-    /**
-     * Return the API resource URI.
-     *
-     * @param string $resource
-     * @return string
-     */
-    public static function getResourceUrl($resource)
-    {
-        return Everypay::getApiUrl() . '/' . $resource;
-    }
-
-    /**
-     * Make an API request with curl.
-     *
-     * @param  string $url
-     * @param  array  $params
-     * @param  string $method
-     * @return array
-     */
-    protected static function request($url, array $params = array(), $method = 'POST')
-    {
-        $client = self::getClient() ?: new CurlClient();
-        $client->setOption(CurlClient::TIMEOUT, 30);
-        $client->setOption(CurlClient::USER_AGENT, 'EveryPay PHP Library ' . Everypay::VERSION);
-        $client->setOption(CurlClient::SSL_VERIFY_PEER, false);
-
-        $request = new Http\Request();
-        $uri = new Http\Uri($url);
-        $uri = $uri->withUserInfo(Everypay::getApiKey());
-        $request = $request->withUri($uri)
-            ->withMethod($method)
-            ->withBody($client->createStreamFromArray($params));
-        $response = $client->send($request);
-
-        $contentType = $response->getHeaderLine('Content-Type');
-        if (stripos($contentType, 'application/json') === false) {
-            throw new Exception\CurlException(
-                'The returned response is not in json format'
-            );
-        }
-
-        return json_decode($response->getBody());
-    }
-
-    public static function setClient(ClientInterface $client)
-    {
-        self::$client = $client;
-    }
-
-    public function getClient()
-    {
-        return self::$client;
     }
 }

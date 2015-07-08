@@ -41,37 +41,7 @@ class Payment extends AbstractResource
      */
     public static function create(array $params)
     {
-        return parent::create(static::RESOURCE_NAME, $params);
-    }
-
-    /**
-     * Retrieve an existing payment based on his token.
-     *
-     * @param string|stdClass $token A valid payment token returned from a
-     *                               successful payment creation.
-     * @return stdClass
-     */
-    public static function retrieve($token)
-    {
-        return parent::retrieve(static::RESOURCE_NAME, $token);
-    }
-
-    /**
-     * Get a collection of payment objects by applying some filters.
-     * Filters are optionals and include:
-     * - count: The number of objects to returns. Availabe range is 1 - 20.
-     * - offset: The offset of collection to return. Useful for pagination.
-     * - date_from: Return objects that created after that date.
-     *   Format: YYYY-mm-dd
-     * - date_to: Return objects that created before that date.
-     *   Format: YYYY-mm-dd
-     *
-     * @param array $filters Filter options.
-     * @return stdClass
-     */
-    public static function listAll(array $filters = array())
-    {
-        return parent::_listAll(static::RESOURCE_NAME, $filters);
+        return parent::create($params);
     }
 
     /**
@@ -88,14 +58,8 @@ class Payment extends AbstractResource
      */
     public static function refund($token, array $params = array())
     {
-        if (is_object($token)) {
-            $token = $token->token;
-        }
-
-        $url      = self::getResourceUrl(static::RESOURCE_NAME) . '/refund/' . $token;
-        $response = self::request($url, $params);
-
-        return self::handleResponse($response);
+        $params['token_id'] = $token;
+        return parent::invoke(__FUNCTION__, static::RESOURCE_NAME, $params);
     }
 
     /**
