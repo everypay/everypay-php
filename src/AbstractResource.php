@@ -149,11 +149,12 @@ abstract class AbstractResource
         $uri = new Http\Uri($url);
         $uri = $uri->withUserInfo(Everypay::getApiKey());
         $request = $request->withUri($uri)
-            ->withMethod($method);
+            ->withMethod($method)
+            ->withBody($client->createStreamFromArray($params));
         $response = $client->send($request);
 
-        $content_type = $response->getHeaderLine('Content-Type');
-        if (stripos($content_type, 'application/json') === false) {
+        $contentType = $response->getHeaderLine('Content-Type');
+        if (stripos($contentType, 'application/json') === false) {
             throw new Exception\CurlException(
                 'The returned response is not in json format'
             );
