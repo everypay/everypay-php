@@ -58,12 +58,12 @@ abstract class AbstractResource
     /**
      * Get a collection of given resource objects by applying some filters.
      * Filters are optionals and include:
-     * - count: The number of objects to returns. Availabe range is 1 - 20.
-     * - offset: The offset of collection to return. Useful for pagination.
+     * - count:     The number of objects to returns. Availabe range is 1 - 20.
+     * - offset:    The offset of collection to return. Useful for pagination.
      * - date_from: Return objects that created after that date.
-     *   Format: YYYY-mm-dd
-     * - date_to: Return objects that created before that date.
-     *   Format: YYYY-mm-dd
+     *              Format: YYYY-mm-dd
+     * - date_to:   Return objects that created before that date.
+     *              Format: YYYY-mm-dd
      *
      * @param array $filters Filter options.
      * @return stdClass
