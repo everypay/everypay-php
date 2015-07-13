@@ -136,7 +136,8 @@ abstract class AbstractResource
         $client = self::getClient() ?: new CurlClient();
         $client->setOption(CurlClient::TIMEOUT, 30);
         $client->setOption(CurlClient::USER_AGENT, 'EveryPay PHP Library ' . Everypay::VERSION);
-        $client->setOption(CurlClient::SSL_VERIFY_PEER, false);
+        $client->setOption(CurlClient::SSL_VERIFY_PEER, true);
+        $client->setOption(CurlClient::SSL_VERIFY_HOST, 2);
 
         return $client;
     }

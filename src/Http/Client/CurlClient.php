@@ -25,6 +25,8 @@ class CurlClient implements ClientInterface
 
     public function send(RequestInterface $request)
     {
+        $this->options = array();
+
         $url     = $this->resolveUrl($request);
         $headers = $this->resolveHeaders($request);
         $method  = $this->resolveMethod($request);

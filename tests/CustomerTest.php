@@ -32,7 +32,7 @@ class CustomerTest extends TestCase
     public function testCustomerRetrieve()
     {
         $token = 'cus_zDdjHBuNW3do8G3jaTqApzsI';
-        //$this->mockResponse($this->success_customer_retrieve_response());
+        $this->mockResponse($this->success_customer_retrieve_response());
         $customer = Customer::retrieve($token);
 
         $this->assertTrue($customer->is_active);
