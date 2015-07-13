@@ -24,7 +24,7 @@ class Payment extends AbstractResource
      * For direct payment with credit / debit cards, card info are required.
      * - card_number: A valid credit /debit card number. [Required]
      * - expiration_month: Integer representation of month. [Required]
-     * - expiration_month: Integer represantation of a valid expiration year. [Required]
+     * - expiration_year: Integer represantation of a valid expiration year. [Required]
      * - cvv: Card verification value. Three or four (American express) digits. [Required]
      * - holder_name: First and last name of the card holder. [Required]
      * For payments with card token, a valid card token required. Card tokens
