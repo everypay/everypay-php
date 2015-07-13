@@ -20,6 +20,7 @@ abstract class AbstractResource
         'retrieve',
         'listAll',
         'refund',
+        'update',
         'delete'
     );
 
@@ -94,7 +95,7 @@ abstract class AbstractResource
     public static function delete($token)
     {
         $params = array('token_id' => $token);
-        return parent::invoke(__FUNCTION__, static::RESOURCE_NAME, $params);
+        return self::invoke(__FUNCTION__, static::RESOURCE_NAME, $params);
     }
 
     public static function setClient(ClientInterface $client)

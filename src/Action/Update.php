@@ -6,7 +6,7 @@ namespace Everypay\Action;
 
 use Everypay\Http\Client\ClientInterface;
 
-class Update
+class Update extends AbstractAction
 {
     protected $method = ClientInterface::METHOD_PUT;
 
