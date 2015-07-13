@@ -147,6 +147,9 @@ class CurlClient implements ClientInterface
                 $options[CURLOPT_CUSTOMREQUEST] = static::METHOD_PUT;
                 $options[CURLOPT_POSTFIELDS]    = $request->getBody();
                 break;
+            case static::METHOD_DELETE:
+                $options[CURLOPT_CUSTOMREQUEST] = static::METHOD_DELETE;
+                break;
         }
 
         return $options;
