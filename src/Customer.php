@@ -25,7 +25,7 @@ class Customer extends AbstractResource
      */
     public static function create(array $params)
     {
-        return parent::invoke(__FUNCTION__, self::getResourceName(), $params);
+        return parent::create($params);
     }
 
     /**
