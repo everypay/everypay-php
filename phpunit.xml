@@ -5,6 +5,6 @@
     backupGlobals               = "false"
     backupStaticAttributes      = "false"
     colors                      = "true"
-    bootstrap                   = "tests/test_init.php">
+    bootstrap                   = "vendor/autoload.php">
 
 </phpunit>
