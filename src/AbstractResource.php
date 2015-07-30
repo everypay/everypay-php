@@ -30,6 +30,8 @@ abstract class AbstractResource
         'customers'
     );
 
+    private static $clientOptions = array();
+
     /**
      * Create a new resource object.
      * See Resource class for more input info.
@@ -98,14 +100,14 @@ abstract class AbstractResource
         return self::invoke(__FUNCTION__, static::RESOURCE_NAME, $params);
     }
 
-    public static function setClient(ClientInterface $client)
+    public static function setClientOption($option, $value)
     {
-        self::$client = $client;
+        self::$clientOptions[$option] = $value;
     }
 
-    public function getClient()
+    public function setClient(ClientInterface $client)
     {
-        return self::$client;
+        self::$client = $client;
     }
 
     protected static function invoke($action, $resourceName, array $params = array())
@@ -133,11 +135,9 @@ abstract class AbstractResource
 
     private static function createClient()
     {
-        $client = self::getClient() ?: new CurlClient();
+        $client = self::$client ?: new CurlClient(self::$clientOptions);
         $client->setOption(CurlClient::TIMEOUT, 30);
         $client->setOption(CurlClient::USER_AGENT, 'EveryPay PHP Library ' . Everypay::VERSION);
-        $client->setOption(CurlClient::SSL_VERIFY_PEER, true);
-        $client->setOption(CurlClient::SSL_VERIFY_HOST, 2);
 
         return $client;
     }
