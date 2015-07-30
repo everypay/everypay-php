@@ -21,34 +21,33 @@ class CurlClient implements ClientInterface
     const SSL_VERIFY_HOST   = CURLOPT_SSL_VERIFYHOST;
     const USER_AGENT        = CURLOPT_USERAGENT;
 
-    private $options = array();
+    private $options = array(
+        CURLOPT_HEADER          => 1,
+        CURLINFO_HEADER_OUT     => 1,
+        CURLOPT_RETURNTRANSFER  => 1,
+        //close connection when it has finished, not pooled for reuse
+        CURLOPT_FORBID_REUSE    => 1,
+        // Do not use cached connection
+        CURLOPT_FRESH_CONNECT   => 1,
+        CURLOPT_CONNECTTIMEOUT  => 5,
+        CURLOPT_TIMEOUT         => 7,
+    );
+
+    public function __construct(array $options = array())
+    {
+        $this->options = $this->options + $options;
+    }
 
     public function send(RequestInterface $request)
     {
-        $this->options = array();
-
-        $url     = $this->resolveUrl($request);
-        $headers = $this->resolveHeaders($request);
-        $method  = $this->resolveMethod($request);
-
-        $options = array(
-            CURLOPT_HEADER          => 1,
-            CURLINFO_HEADER_OUT     => 1,
-            CURLOPT_HTTPHEADER      => $headers,
-            CURLOPT_RETURNTRANSFER  => 1,
-            CURLOPT_URL             => $url,
-            //close connection when it has finished, not pooled for reuse
-            CURLOPT_FORBID_REUSE    => 1,
-            // Do not use cached connection
-            CURLOPT_FRESH_CONNECT   => 1,
-            CURLOPT_CONNECTTIMEOUT  => 5,
-            CURLOPT_TIMEOUT         => 7,
-        );
-
-        $options = $options + $this->options + $method;
+        $this->resolveUrl($request);
+        $this->resolveHeaders($request);
+        $this->resolveMethod($request);
 
         $handler = curl_init();
-        curl_setopt_array($handler, $options);
+        if (false === curl_setopt_array($handler, $this->options)) {
+            throw new CurlException('Invalid options for cUrl client');
+        }
 
         $result = curl_exec($handler);
 
@@ -81,6 +80,11 @@ class CurlClient implements ClientInterface
     public function setOptions(array $options = array())
     {
         $this->options = array_replace($this->options, $options);
+    }
+
+    public function getOptions()
+    {
+        return $this->options;
     }
 
     protected function resolveResponse($result, $info)
@@ -129,32 +133,33 @@ class CurlClient implements ClientInterface
             $headers[] = $name . ': ' . implode(", ", $values);
         }
 
-        return $headers;
+        $this->options[CURLOPT_HTTPHEADER] = $headers;
     }
 
     private function resolveMethod(RequestInterface $request)
     {
-        $options = array();
+        unset($this->options[CURLOPT_CUSTOMREQUEST]);
+        unset($this->options[CURLOPT_POSTFIELDS]);
+        unset($this->options[CURLOPT_POST]);
+        unset($this->options[CURLOPT_HTTPGET]);
 
         switch ($request->getMethod()) {
             case static::METHOD_POST:
-                $options[CURLOPT_POST]       = 1;
-                $options[CURLOPT_POSTFIELDS] = $request->getBody();
+                $this->options[CURLOPT_POST]       = 1;
+                $this->options[CURLOPT_POSTFIELDS] = $request->getBody();
                 break;
             case static::METHOD_GET:
-                $options[CURLOPT_HTTPGET]    = 1;
+                $this->options[CURLOPT_HTTPGET]    = 1;
                 break;
             case static::METHOD_PUT:
-                $options[CURLOPT_POST]          = 1;
-                $options[CURLOPT_CUSTOMREQUEST] = static::METHOD_PUT;
-                $options[CURLOPT_POSTFIELDS]    = $request->getBody();
+                $this->options[CURLOPT_POST]          = 1;
+                $this->options[CURLOPT_CUSTOMREQUEST] = static::METHOD_PUT;
+                $this->options[CURLOPT_POSTFIELDS]    = $request->getBody();
                 break;
             case static::METHOD_DELETE:
-                $options[CURLOPT_CUSTOMREQUEST] = static::METHOD_DELETE;
+                $this->options[CURLOPT_CUSTOMREQUEST] = static::METHOD_DELETE;
                 break;
         }
-
-        return $options;
     }
 
     private function resolveUrl(RequestInterface $request)
@@ -170,13 +175,21 @@ class CurlClient implements ClientInterface
 
         $port = 'https' == $uri->getScheme() ? 443 : $port;
 
-        $this->options[CURLOPT_PORT] = $port;
-
-        return $uri->getScheme()
+        $url = $uri->getScheme()
             . '://'
             . $uri->getHost()
             . $uri->getPath()
             . ($uri->getQuery() ? '?' . $uri->getQuery() : null)
             . ($uri->getFragment() ? '#' . $uri->getFragment() : null);
+
+        $this->options[CURLOPT_PORT] = $port;
+        $this->options[CURLOPT_URL]  = $url;
+    }
+
+    private function resetOptions()
+    {
+        $this->options = array(
+
+        );
     }
 }
