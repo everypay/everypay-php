@@ -71,7 +71,7 @@ class CustomerTest extends TestCase
         $this->mockResponse($this->success_customer_listAll_response());
         $customers = Customer::listAll(array('count'=>2));
 
-        //$this->assertEquals($customers->total_count, 6); //don't know what to expect (total records in db)
+        $this->assertEquals($customers->total_count, 6);
         $this->assertEquals($customers->items[0]->token, $token0);
     }
     
