@@ -105,6 +105,11 @@ abstract class AbstractResource
         self::$clientOptions[$option] = $value;
     }
 
+    public function setClient(ClientInterface $client)
+    {
+        self::$client = $client;
+    }
+
     protected static function invoke($action, $resourceName, array $params = array())
     {
         if (!in_array($action, self::$actions)) {
@@ -130,7 +135,7 @@ abstract class AbstractResource
 
     private static function createClient()
     {
-        $client = new CurlClient(self::$clientOptions);
+        $client = self::$client ?: new CurlClient(self::$clientOptions);
         $client->setOption(CurlClient::TIMEOUT, 30);
         $client->setOption(CurlClient::USER_AGENT, 'EveryPay PHP Library ' . Everypay::VERSION);
 
