@@ -65,6 +65,16 @@ class CustomerTest extends TestCase
         $this->assertFalse($customer->is_active);
     }
 
+    public function testCustomerListAll()
+    {
+        $token0 = 'cus_zDdjHBuNW3do8G3jaTqApzsI';
+        $this->mockResponse($this->success_customer_listAll_response());
+        $customers = Customer::listAll(array('count'=>2));
+
+        $this->assertEquals($customers->total_count, 6);
+        $this->assertEquals($customers->items[0]->token, $token0);
+    }
+    
     private function success_customer_create_response()
     {
         return '{ "description": null, "email": null, "date_created": "2015-07-13T12:26:56+0300", "full_name": null, "token": "cus_zDdjHBuNW3do8G3jaTqApzsI", "is_active": true, "date_modified": "2015-07-13T12:26:56+0300", "card": { "expiration_month": "01", "expiration_year": "2016", "last_four": "1111", "type": "Visa", "holder_name": "John Doe" }}';
@@ -83,5 +93,15 @@ class CustomerTest extends TestCase
     private function success_customer_delete_response()
     {
         return '{ "description": null, "email": "john_dow@example.com", "date_created": "2015-07-13T12:26:56+0300", "full_name": "John Doe", "token": "cus_zDdjHBuNW3do8G3jaTqApzsI", "is_active": false, "date_modified": "2015-07-13T12:39:50+0300" }';
+    }
+    
+    private function success_customer_listAll_response()
+    {
+        return '{ "total_count":6, "items": [ '
+            .'{ "description": null, "email": null, "date_created": "2015-07-13T12:26:56+0300", "full_name": null, "token": "cus_zDdjHBuNW3do8G3jaTqApzsI", "is_active": true, "date_modified": "2015-07-13T12:26:56+0300", "card": { "expiration_month": "01", "expiration_year": "2016", "last_four": "1111", "type": "Visa", "holder_name": "John Doe" } }'
+            .','
+            .'{ "description": "Smith Hill Co", "email": "smith.hill@email.co.uk", "date_created": "2015-07-28T11:19:55+0300", "full_name": null, "token": "cus_b7QO01Ie4csrDAkRjXijK7aM", "is_active": true, "date_modified": "2015-07-28T11:19:55+0300", "card": { "expiration_month": "05", "expiration_year": "2016", "last_four": "4242", "type": "Visa", "holder_name": "Mike Smith" } }'
+            .'] }'
+            ;
     }
 }
