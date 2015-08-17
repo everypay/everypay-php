@@ -40,6 +40,35 @@ class TokenTest extends TestCase
         $this->assertFalse($token->has_expired);
     }
 
+    /**
+     * @expectedException         Everypay\Exception\RuntimeException
+     * @expectedExceptionMessage  Resource Tokens does not support method Everypay\Token::listAll
+     */
+    public function testTokensListAll()
+    {
+        $payment = Token::listAll();
+    }
+
+    /**
+     * @expectedException         Everypay\Exception\RuntimeException
+     * @expectedExceptionMessage  Resource Tokens does not support method Everypay\Token::update
+     */
+    public function testTokensUpdate()
+    {
+        $token = 'ctn_oLyYPaymB2AozoABZYYHnb3g';
+        $payment = Token::update($token, []);
+    }
+
+    /**
+     * @expectedException         Everypay\Exception\RuntimeException
+     * @expectedExceptionMessage  Resource Tokens does not support method Everypay\Token::delete
+     */
+    public function testTokensDelete()
+    {
+        $token = 'ctn_oLyYPaymB2AozoABZYYHnb3g';
+        $payment = Token::delete($token);
+    }
+
     private function success_token_create_response()
     {
         return '{ "token": "ctn_oLyYPaymB2AozoABZYYHnb3g", "is_used": false, "has_expired": false, "amount": 0, "date_created": "2015-07-08T15:54:50+0300", "card": { "expiration_month": "01", "expiration_year": "2016", "last_four": "1111", "type": "Visa", "holder_name": "John Doe" }}';

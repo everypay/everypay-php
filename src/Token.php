@@ -44,7 +44,7 @@ class Token extends AbstractResource
     public static function listAll(array $params = array())
     {
         throw new Exception\RuntimeException(
-            'Resource ' . ucfirst(self::getResourceName()) .
+            'Resource ' . ucfirst(static::RESOURCE_NAME) .
             ' does not support method ' . __METHOD__
         );
     }
@@ -58,7 +58,7 @@ class Token extends AbstractResource
     public static function update($token, array $params)
     {
         throw new Exception\RuntimeException(
-            'Resource ' . ucfirst(self::getResourceName()) .
+            'Resource ' . ucfirst(static::RESOURCE_NAME) .
             ' does not support method ' . __METHOD__
         );
     }
@@ -72,7 +72,7 @@ class Token extends AbstractResource
     public static function delete($token)
     {
         throw new Exception\RuntimeException(
-            'Resource ' . ucfirst(self::getResourceName()) .
+            'Resource ' . ucfirst(static::RESOURCE_NAME) .
             ' does not support method ' . __METHOD__
         );
     }
