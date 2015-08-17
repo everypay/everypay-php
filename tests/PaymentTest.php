@@ -36,10 +36,49 @@ class PaymentTest extends TestCase
         );
         $payment = Payment::create($params);
 
-        $this->assertObjectHasAttribute('token', $payment);
-        $this->assertObjectHasAttribute('status', $payment);
-        $this->assertObjectHasAttribute('amount', $payment);
-        $this->assertObjectHasAttribute('fee_amount', $payment);
+        $this->assertPaymentProperties($payment);
+    }
+
+    public function testPaymentAuthorize()
+    {
+        $this->mockResponse($this->success_payment_authorize_response());
+
+        $params = array(
+            'card_number'       => '4000000000000002',
+            'expiration_month'  => '01',
+            'expiration_year'   => date('Y') + 1,
+            'cvv'               => '123',
+            'holder_name'       => 'John Doe',
+            'amount'            => 100,
+            'capture'           => 0
+        );
+        $payment = Payment::create($params);
+
+        $this->assertPaymentProperties($payment);
+        $this->assertEquals('Pre authorized', $payment->status);
+    }
+
+    public function testPaymentCapture()
+    {
+        $this->mockResponse($this->success_payment_capture_response());
+
+        $token   = 'pmt_vBbiBMkqyA0YUT5Lz7gS5prY';
+        $payment = Payment::capture($token);
+
+        $this->assertPaymentProperties($payment);
+        $this->assertEquals('Captured', $payment->status);
+    }
+
+    public function testPaymentVoid()
+    {
+        $this->mockResponse($this->success_payment_void_response());
+
+        $token   = 'pmt_dWOEowLhaNocgsk339P1RYzX';
+        $payment = Payment::refund($token);
+
+        $this->assertPaymentProperties($payment);
+        $this->assertObjectHasAttribute('refunds', $payment);
+        $this->assertEquals('Refunded', $payment->status);
     }
 
     public function testPaymentListAll()
@@ -64,6 +103,17 @@ class PaymentTest extends TestCase
     }
 
     /**
+     * @expectedException         Everypay\Exception\CurlException
+     * @expectedExceptionMessage  The returned response is not in json format
+     */
+    public function testPaymentError()
+    {
+        $this->mockResponse($this->error_payment_response(), 'text/html');
+        $token = 'pmt_4KQ2DD15gs2w8RS4M2MhBz1Q';
+        $payment = Payment::refund($token);
+    }
+
+    /**
      * @expectedException         Everypay\Exception\RuntimeException
      * @expectedExceptionMessage  Resource Payments does not support method Everypay\Payment::delete
      */
@@ -81,6 +131,14 @@ class PaymentTest extends TestCase
     {
         $token = 'pmt_4KQ2DD15gs2w8RS4M2MhBz1Q';
         $payment = Payment::update($token, []);
+    }
+
+    private function assertPaymentProperties($payment)
+    {
+        $this->assertObjectHasAttribute('token', $payment);
+        $this->assertObjectHasAttribute('status', $payment);
+        $this->assertObjectHasAttribute('amount', $payment);
+        $this->assertObjectHasAttribute('fee_amount', $payment);
     }
 
     private function success_payment_retrieve_response()
@@ -101,5 +159,25 @@ class PaymentTest extends TestCase
     private function success_payment_refund_response()
     {
         return '{ "token": "pmt_4KQ2DD15gs2w8RS4M2MhBz1Q", "date_created": "2015-07-06T18:05:01+0300", "description": "payment for item #222", "currency": "EUR", "status": "Refunded", "amount": 50, "refund_amount": 50, "fee_amount": 0, "payee_email": null, "payee_phone": null, "refunded": true, "refunds": [ { "token": "ref_6KbhjFSSjTx9wYttxzEFHTnL", "status": "Captured", "date_created": "2015-07-08T15:14:29+0300", "amount": 50, "fee_amount": 21, "description": null } ], "card": { "expiration_month": "10", "expiration_year": "2017", "last_four": "9610", "type": "Visa", "holder_name": "John Doe" } }';
+    }
+
+    private function success_payment_authorize_response()
+    {
+        return '{ "token": "pmt_vBbiBMkqyA0YUT5Lz7gS5prY", "date_created": "2015-08-17T18:08:01+0300", "description": null, "currency": "EUR", "status": "Pre authorized", "amount": 100, "refund_amount": 0, "fee_amount": 22, "payee_email": null, "payee_phone": null, "refunded": false, "refunds": [], "card": { "expiration_month": "01", "expiration_year": "2016", "last_four": "0002", "type": "Visa", "holder_name": "John Doe" } }';
+    }
+
+    private function success_payment_capture_response()
+    {
+        return '{ "token": "pmt_vBbiBMkqyA0YUT5Lz7gS5prY", "date_created": "2015-08-17T18:08:01+0300", "description": null, "currency": "EUR", "status": "Captured", "amount": 100, "refund_amount": 0, "fee_amount": 22, "payee_email": null, "payee_phone": null, "refunded": false, "refunds": [], "card": { "expiration_month": "01", "expiration_year": "2016", "last_four": "0002", "type": "Visa", "holder_name": "John Doe" } }';
+    }
+
+    private function success_payment_void_response()
+    {
+        return '{ "token": "pmt_dWOEowLhaNocgsk339P1RYzX", "date_created": "2015-08-17T18:11:24+0300", "description": null, "currency": "EUR", "status": "Refunded", "amount": 100, "refund_amount": 100, "fee_amount": 0, "payee_email": null, "payee_phone": null, "refunded": true, "refunds": [ { "token": "ref_JMGfCCqJHwEc2wIvG7KuHkMS", "status": "Captured", "date_created": "2015-08-17T18:12:31+0300", "amount": 100, "fee_amount": 22, "description": null } ], "card": { "expiration_month": "01", "expiration_year": "2016", "last_four": "0002", "type": "Visa", "holder_name": "John Doe" } }';
+    }
+
+    private function error_payment_response()
+    {
+        return '{ "error": { "status": 404, "code": 40005, "message": "Could not find payment: pmt_X9QzzUUe9FPakmsCzUX50wul" } }';
     }
 }

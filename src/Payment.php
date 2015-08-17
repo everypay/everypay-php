@@ -36,6 +36,8 @@ class Payment extends AbstractResource
      * - description:   A decription for this payment max 255 chars. [Optional]
      * - payee_email:   Customer email. [Optional]
      * - payee_phone:   Customer phone number. [Optional]
+     * - capture:       Whether to capture a payment or just authorize it.
+     *                  Authorize a payament this value must be 0.
      *
      * @param array $params
      * @return stdClass
@@ -43,6 +45,12 @@ class Payment extends AbstractResource
     public static function create(array $params)
     {
         return parent::create($params);
+    }
+
+    public static function capture($token)
+    {
+        $params['token_id'] = $token;
+        return parent::invoke(__FUNCTION__, static::RESOURCE_NAME, $params);
     }
 
     /**

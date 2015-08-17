@@ -13,7 +13,7 @@ class Everypay
     /**
      * @var string
      */
-    const VERSION = '1.0.0';
+    const VERSION = '2.1.0';
 
     /**
      * API request key.
@@ -29,7 +29,7 @@ class Everypay
      */
     protected static $apiUrl = 'https://api.everypay.gr';
 
-    protected static $testApiUrl = 'https://sandbox.everypay.gr';
+    protected static $testApiUrl = 'https://sandbox-api.everypay.gr';
 
     public static $isTest = false;
 

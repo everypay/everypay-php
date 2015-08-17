@@ -17,6 +17,7 @@ abstract class AbstractResource
 
     private static $actions = array(
         'create',
+        'capture',
         'retrieve',
         'listAll',
         'refund',
