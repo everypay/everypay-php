@@ -36,8 +36,10 @@ class Payment extends AbstractResource
      * - description:   A decription for this payment max 255 chars. [Optional]
      * - payee_email:   Customer email. [Optional]
      * - payee_phone:   Customer phone number. [Optional]
-     * - capture:       Whether to capture a payment or just authorize it.
-     *                  Authorize a payament this value must be 0.
+     * - capture:       Boolean Whether to capture a payment or just authorize it.
+     *                  To authorize a payment this value must be 0.
+     * - create_customer: Boolean Whether to create a customer and store its
+     *                    card or not.
      *
      * @param array $params
      * @return stdClass

@@ -102,6 +102,43 @@ class PaymentTest extends TestCase
         $this->assertEquals(0, $payment->fee_amount);
     }
 
+    public function testPaymentCreatesCustomer()
+    {
+        $this->mockResponse($this->success_payment_with_customer_response());
+        $params = array(
+            'card_number'       => '4111111111111111',
+            'expiration_month'  => '01',
+            'expiration_year'   => date('Y') + 1,
+            'cvv'               => '123',
+            'holder_name'       => 'John Doe',
+            'amount'            => 100,
+            'create_customer'   => true
+        );
+        $payment = Payment::create($params);
+
+        $this->assertPaymentProperties($payment);
+        $this->assertObjectHasAttribute('customer', $payment);
+    }
+
+    public function testAuthorizedPaymentCreatesCustomer()
+    {
+        $this->mockResponse($this->success_authorize_with_customer_response());
+        $params = array(
+            'card_number'       => '4000000000000002',
+            'expiration_month'  => '01',
+            'expiration_year'   => date('Y') + 1,
+            'cvv'               => '123',
+            'holder_name'       => 'John Doe',
+            'amount'            => 100,
+            'create_customer'   => true,
+            'capture'           => false
+        );
+        $payment = Payment::create($params);
+
+        $this->assertPaymentProperties($payment);
+        $this->assertObjectHasAttribute('customer', $payment);
+    }
+
     /**
      * @expectedException         Everypay\Exception\CurlException
      * @expectedExceptionMessage  The returned response is not in json format
@@ -179,5 +216,15 @@ class PaymentTest extends TestCase
     private function error_payment_response()
     {
         return '{ "error": { "status": 404, "code": 40005, "message": "Could not find payment: pmt_X9QzzUUe9FPakmsCzUX50wul" } }';
+    }
+
+    private function success_payment_with_customer_response()
+    {
+        return '{ "token": "pmt_RyIwmVA2r8T3UMcMIvKcbxGE", "date_created": "2015-08-21T17:57:02+0300", "description": null, "currency": "EUR", "status": "Captured", "amount": 100, "refund_amount": 0, "fee_amount": 22, "payee_email": null, "payee_phone": null, "refunded": false, "refunds": [], "customer": { "description": null, "email": null, "date_created": "2015-08-21T17:57:02+0300", "full_name": "John Doe", "token": "cus_Hdv4aPIwIFfRh5Bo609HiaDo", "is_active": true, "date_modified": "2015-08-21T17:57:02+0300", "card": { "expiration_month": "01", "expiration_year": "2016", "last_four": "1111", "type": "Visa", "holder_name": "John Doe" } } }';
+    }
+
+    private function success_authorize_with_customer_response()
+    {
+        return '{ "token": "pmt_RyIwmVA2r8T3UMcMIvKcbxGE", "date_created": "2015-08-21T17:57:02+0300", "description": null, "currency": "EUR", "status": "Captured", "amount": 100, "refund_amount": 0, "fee_amount": 22, "payee_email": null, "payee_phone": null, "refunded": false, "refunds": [], "customer": { "description": null, "email": null, "date_created": "2015-08-21T17:57:02+0300", "full_name": "John Doe", "token": "cus_Hdv4aPIwIFfRh5Bo609HiaDo", "is_active": true, "date_modified": "2015-08-21T17:57:02+0300", "card": { "expiration_month": "01", "expiration_year": "2016", "last_four": "1111", "type": "Visa", "holder_name": "John Doe" } } }';
     }
 }
