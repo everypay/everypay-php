@@ -164,7 +164,8 @@ abstract class AbstractResource
         if (isset($response->error->code)) {
             if (EveryPay::throwExceptions()) {
                 throw new Everypay_Exception_ApiErrorException(
-                    $response->error->message, $response->error->code
+                    $response->error->message,
+                    $response->error->code
                 );
             }
         }
