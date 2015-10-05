@@ -40,6 +40,11 @@ class Payment extends AbstractResource
      *                  To authorize a payment this value must be 0.
      * - create_customer: Boolean Whether to create a customer and store its
      *                    card or not.
+     * - installments: Integer The number of installments for this payment.
+     *                 Can only be used for credit card payments.
+     * - max_installments: Integer Used for payments with token, to validate
+     *                      max installments set by the merchant from
+     *                      everypay Button.
      *
      * @param array $params
      * @return stdClass
