@@ -167,7 +167,7 @@ class PaymentTest extends TestCase
     public function testPaymentUpdate()
     {
         $token = 'pmt_4KQ2DD15gs2w8RS4M2MhBz1Q';
-        $payment = Payment::update($token, []);
+        $payment = Payment::update($token, array());
     }
 
     private function assertPaymentProperties($payment)

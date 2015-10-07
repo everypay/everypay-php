@@ -56,7 +56,7 @@ class TokenTest extends TestCase
     public function testTokensUpdate()
     {
         $token = 'ctn_oLyYPaymB2AozoABZYYHnb3g';
-        $payment = Token::update($token, []);
+        $payment = Token::update($token, array());
     }
 
     /**
