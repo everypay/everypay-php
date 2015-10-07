@@ -22,7 +22,7 @@ $ composer require "everypay/everypay-php":"@stable"
 Include require line in your ```composer.json``` file
 ```json
 {
-	require: {
+	"require": {
     	"everypay/everypay-php": "@stable"
     }
 }
