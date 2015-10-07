@@ -28,7 +28,8 @@ abstract class AbstractResource
     private static $resources = array(
         'tokens',
         'payments',
-        'customers'
+        'customers',
+        'notifications'
     );
 
     private static $clientOptions = array();
@@ -159,7 +160,8 @@ abstract class AbstractResource
             );
         }
 
-        $response = json_decode($response->getBody());
+        $body = $response->getBody();
+        $response = json_decode($body);
 
         if (isset($response->error->code)) {
             if (EveryPay::throwExceptions()) {
