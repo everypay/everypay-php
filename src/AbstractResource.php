@@ -107,7 +107,7 @@ abstract class AbstractResource
         self::$clientOptions[$option] = $value;
     }
 
-    public function setClient(ClientInterface $client)
+    public static function setClient(ClientInterface $client)
     {
         self::$client = $client;
     }
