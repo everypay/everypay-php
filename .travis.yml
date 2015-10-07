@@ -6,7 +6,9 @@ php:
   - hhvm
 install:
   - composer require satooshi/php-coveralls:~0.6@stable
-before_script: composer dump-autoload
+before_script:
+    - composer dump-autoload
+    - cp tests/fixtures.ini.example tests/fixtures.ini
 script:
     - phpunit tests/
 after_success:
