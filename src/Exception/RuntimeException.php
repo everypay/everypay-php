@@ -6,4 +6,6 @@
 namespace Everypay\Exception;
 
 class RuntimeException extends \RuntimeException
-{}
+{
+
+}
