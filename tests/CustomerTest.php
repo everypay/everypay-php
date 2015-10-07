@@ -28,7 +28,6 @@ class CustomerTest extends TestCase
 
         $this->assertTrue($customer->is_active);
         $this->assertNotNull($customer->token);
-        print_r($customer);
     }
 
     public function testCustomerRetrieve()
