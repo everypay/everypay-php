@@ -53,7 +53,8 @@ $params = array(
     'expiration_month'  => '01',
     'expiration_year'   => '2020',
     'cvv'               => '123',
-	'holder_name'       => 'John Doe'
+	'holder_name'       => 'John Doe',
+    'amount'            => 1000 # amount in cents for 10 EURO.
 );
 
 Payment::create($params);
