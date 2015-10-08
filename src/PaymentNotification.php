@@ -33,7 +33,6 @@ class PaymentNotification extends AbstractResource
     /**
      * Not available for this resource.
      *
-     * @param array $params
      * @throws Everypay\Exception\RuntimeException
      */
     public static function delete($token)

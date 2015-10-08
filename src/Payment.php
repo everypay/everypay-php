@@ -56,7 +56,7 @@ class Payment extends AbstractResource
 
     public static function capture($token)
     {
-        $params['token_id'] = $token;
+        $params = array('token_id' => $token);
         return self::invoke(__FUNCTION__, static::RESOURCE_NAME, $params);
     }
 

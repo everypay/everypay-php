@@ -66,7 +66,6 @@ class Token extends AbstractResource
     /**
      * Not avalable for this resource.
      *
-     * @param array $params
      * @throws Everypay\Exception\RuntimeException
      */
     public static function delete($token)

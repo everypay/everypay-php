@@ -188,11 +188,4 @@ class CurlClient implements ClientInterface
         $this->options[CURLOPT_PORT] = $port;
         $this->options[CURLOPT_URL]  = $url;
     }
-
-    private function resetOptions()
-    {
-        $this->options = array(
-
-        );
-    }
 }
