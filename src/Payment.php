@@ -57,7 +57,7 @@ class Payment extends AbstractResource
     public static function capture($token)
     {
         $params['token_id'] = $token;
-        return parent::invoke(__FUNCTION__, static::RESOURCE_NAME, $params);
+        return self::invoke(__FUNCTION__, static::RESOURCE_NAME, $params);
     }
 
     /**
@@ -75,13 +75,12 @@ class Payment extends AbstractResource
     public static function refund($token, array $params = array())
     {
         $params['token_id'] = $token;
-        return parent::invoke(__FUNCTION__, static::RESOURCE_NAME, $params);
+        return self::invoke(__FUNCTION__, static::RESOURCE_NAME, $params);
     }
 
     /**
      * Not available for this resource.
      *
-     * @param array $params
      * @throws Everypay\Exception\RuntimeException
      */
     public static function delete($token)

@@ -10,6 +10,9 @@ class ListAll extends AbstractAction
 {
     protected $method = ClientInterface::METHOD_GET;
 
+    /**
+     * {@inheritdoc}
+     */
     public function __invoke()
     {
         return $this->createRequest($this->method);

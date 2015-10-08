@@ -40,6 +40,11 @@ abstract class AbstractAction
             . ($this->tokenId ? '/'.$this->tokenId : null);
     }
 
+    /**
+     * @param string $method REquest method.
+     *
+     * @return Everypay\Http\RequestInterface
+     */
     protected function createRequest($method)
     {
         $request = new Request();
@@ -49,6 +54,7 @@ abstract class AbstractAction
         $request = $request->withMethod($method)
             ->withBody($this->createStringFromArray($this->params))
             ->withUri($uri);
+
         return $request;
     }
 

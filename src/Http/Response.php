@@ -84,9 +84,9 @@ class Response extends Message implements ResponseInterface
     public function getReasonPhrase()
     {
         if (!$this->reasonPhrase
-            && isset($this->phrases[$this->statusCode])
+            && isset($this->reasonPhrases[$this->statusCode])
         ) {
-            $this->reasonPhrase = $this->phrases[$this->statusCode];
+            $this->reasonPhrase = $this->reasonPhrases[$this->statusCode];
         }
 
         return $this->reasonPhrase;

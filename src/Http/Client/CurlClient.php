@@ -38,6 +38,9 @@ class CurlClient implements ClientInterface
         $this->options = $this->options + $options;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function send(RequestInterface $request)
     {
         $this->resolveUrl($request);

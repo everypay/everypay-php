@@ -10,6 +10,9 @@ class Update extends AbstractAction
 {
     protected $method = ClientInterface::METHOD_PUT;
 
+    /**
+     * {@inheritdoc}
+     */
     public function __invoke()
     {
         return $this->createRequest($this->method);

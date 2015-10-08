@@ -10,6 +10,9 @@ class Capture extends AbstractAction
 {
     protected $method = ClientInterface::METHOD_PUT;
 
+    /**
+     * {@inheritdoc}
+     */
     public function __invoke()
     {
         $this->resource .= '/capture';

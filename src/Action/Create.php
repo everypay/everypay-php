@@ -10,6 +10,9 @@ class Create extends AbstractAction
 {
     protected $method = ClientInterface::METHOD_POST;
 
+    /**
+     * {@inheritdoc}
+     */
     public function __invoke()
     {
         return $this->createRequest($this->method);

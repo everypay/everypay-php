@@ -10,6 +10,9 @@ class Delete extends AbstractAction
 {
     protected $method = ClientInterface::METHOD_DELETE;
 
+    /**
+     * {@inheritdoc}
+     */
     public function __invoke()
     {
         return $this->createRequest($this->method);

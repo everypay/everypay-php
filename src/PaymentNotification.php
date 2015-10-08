@@ -29,4 +29,33 @@ class PaymentNotification extends AbstractResource
     {
         return parent::create($params);
     }
+
+    /**
+     * Not available for this resource.
+     *
+     * @param array $params
+     * @throws Everypay\Exception\RuntimeException
+     */
+    public static function delete($token)
+    {
+        throw new Exception\RuntimeException(
+            'Resource ' . ucfirst(static::RESOURCE_NAME) .
+            ' does not support method ' . __METHOD__
+        );
+    }
+
+    /**
+     * Not available for this resource.
+     *
+     * @param string|stdClass
+     * @param array $params
+     * @throws Everypay\Exception\RuntimeException
+     */
+    public static function update($token, array $params)
+    {
+        throw new Exception\RuntimeException(
+            'Resource ' . ucfirst(static::RESOURCE_NAME) .
+            ' does not support method ' . __METHOD__
+        );
+    }
 }
