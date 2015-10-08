@@ -28,7 +28,7 @@ abstract class AbstractAction
     /**
      * Executes current action class.
      *
-     * @return Everypay\Http\RequestInterface
+     * @return \Everypay\Http\RequestInterface
      */
     abstract public function __invoke();
 
@@ -43,7 +43,7 @@ abstract class AbstractAction
     /**
      * @param string $method REquest method.
      *
-     * @return Everypay\Http\RequestInterface
+     * @return \Everypay\Http\RequestInterface
      */
     protected function createRequest($method)
     {

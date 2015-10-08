@@ -28,7 +28,7 @@ interface ClientInterface
      * Sends given request.
      *
      * @param RequestInterface $request
-     * @return Everypay\Http\ResponseInterface
+     * @return \Everypay\Http\ResponseInterface
      */
     public function send(RequestInterface $request);
 }
