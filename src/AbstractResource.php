@@ -147,9 +147,9 @@ abstract class AbstractResource
     /**
      * Handle API response.
      *
-     * @param stdClass $response
-     * @return stdClass
-     * @throws Everypay_Exception_ApiErrorException
+     * @param \Everypay\Http\ResponseInterface $response
+     * @return \stdClass
+     * @throws \Everypay\Exception\ApiErrorException
      */
     protected static function handleResponse($response)
     {
