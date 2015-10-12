@@ -7,6 +7,7 @@ namespace Everypay\Action;
 use Everypay\Exception\InvalidArgumentException;
 use Everypay\Http\Request;
 use Everypay\Http\Uri;
+use Everypay\Http\Client\ClientInterface;
 
 abstract class AbstractAction
 {
@@ -52,8 +53,11 @@ abstract class AbstractAction
         $uri = $uri->withUserInfo($this->apiKey);
 
         $request = $request->withMethod($method)
-            ->withBody($this->createStringFromArray($this->params))
             ->withUri($uri);
+
+        if (in_array($method, [ClientInterface::METHOD_POST, ClientInterface::METHOD_PUT])) {
+            $request = $request->withBody($this->createStringFromArray($this->params));
+        }
 
         return $request;
     }

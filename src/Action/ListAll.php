@@ -17,4 +17,15 @@ class ListAll extends AbstractAction
     {
         return $this->createRequest($this->method);
     }
+
+    protected function getResourceUri()
+    {
+        $uri = parent::getResourceUri();
+
+        if (!empty($this->params)) {
+            $uri .= '?' . http_build_query($this->params, null, '&');
+        }
+
+        return $uri;
+    }
 }
