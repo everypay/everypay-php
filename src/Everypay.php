@@ -13,7 +13,7 @@ class Everypay
     /**
      * @var string
      */
-    const VERSION = '2.3.4';
+    const VERSION = '2.3.5';
 
     /**
      * API request key.

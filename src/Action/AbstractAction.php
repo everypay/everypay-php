@@ -55,7 +55,7 @@ abstract class AbstractAction
         $request = $request->withMethod($method)
             ->withUri($uri);
 
-        if (in_array($method, [ClientInterface::METHOD_POST, ClientInterface::METHOD_PUT])) {
+        if (in_array($method, array(ClientInterface::METHOD_POST, ClientInterface::METHOD_PUT))) {
             $request = $request->withBody($this->createStringFromArray($this->params));
         }
 
