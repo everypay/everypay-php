@@ -4,10 +4,12 @@
 
 namespace Everypay;
 
+use Everypay\Exception\RuntimeException;
+
 class PaymentTest extends TestCase
 {
     public function setUp()
-    {
+    {   
         $credentials = $this->getFixtures()->offsetGet('everypay');
         Everypay::setApiKey($credentials['secret_key']);
     }
@@ -226,5 +228,52 @@ class PaymentTest extends TestCase
     private function success_authorize_with_customer_response()
     {
         return '{ "token": "pmt_RyIwmVA2r8T3UMcMIvKcbxGE", "date_created": "2015-08-21T17:57:02+0300", "description": null, "currency": "EUR", "status": "Captured", "amount": 100, "refund_amount": 0, "fee_amount": 22, "payee_email": null, "payee_phone": null, "refunded": false, "refunds": [], "customer": { "description": null, "email": null, "date_created": "2015-08-21T17:57:02+0300", "full_name": "John Doe", "token": "cus_Hdv4aPIwIFfRh5Bo609HiaDo", "is_active": true, "date_modified": "2015-08-21T17:57:02+0300", "card": { "expiration_month": "01", "expiration_year": "2016", "last_four": "1111", "type": "Visa", "holder_name": "John Doe" } } }';
+    }
+    
+    /**
+     * @expectedException        \RuntimeException
+     */
+    public function testDeletePaymentNotAllowed()
+    {
+        if(!$this->isRemote()){
+            $this->markTestSkipped(
+              'Not applicable in REMOTE TEST_ENV'
+            );
+        }
+        
+        Payment::delete('some_token');
+    }
+    
+    public function testCreateVisaPaymentTdsNotAllowedWithCard()
+    {
+        if(!$this->isRemote()){
+            $this->markTestSkipped(
+              'Not applicable in REMOTE TEST_ENV'
+            );
+        }
+        
+        $credentials = $this->getFixtures()->offsetGet('everypay');
+        Everypay::setApiKey($credentials['secret_key']);
+        
+        $params = array(
+            'card_number'       => '4111111111111111',
+            'expiration_month'  => '01',
+            'expiration_year'   => date('Y') + 1,
+            'cvv'               => '123',
+            'holder_name'       => 'John Doe'
+        );
+
+        //$response = Payment::create($params);
+        
+        //$this->assertObjectHasAttribute('error', $response, print_r($response, true));
+        //$this->assertEquals($response->error->code, ApiException::TDS_ONLY_TOKEN_ALLOWED, print_r($response, true));
+    }
+    
+    protected function isRemote(){
+        if(TEST_ENV == 'REMOTE'){
+            return 1;
+        }else if(TEST_ENV == 'LOCAL'){
+            return 0;
+        }
     }
 }
