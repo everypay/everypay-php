@@ -12,22 +12,16 @@ class PaymentTest extends TestCase
     {   
         $credentials = $this->getFixtures()->offsetGet('everypay');
         Everypay::setApiKey($credentials['secret_key']);
+        $apiUri = 'http://api.everypay.local';
+        Everypay::setApiUrl($apiUri);
     }
-
-    public function testPaymentRetrieve()
-    {
-        $this->mockResponse($this->success_payment_retrieve_response());
-        $payment = Payment::retrieve('pmt_4KQ2DD15gs2w8RS4M2MhBz1Q');
-
-        $this->assertObjectHasAttribute('token', $payment);
-        $this->assertObjectHasAttribute('status', $payment);
-        $this->assertObjectHasAttribute('amount', $payment);
-        $this->assertObjectHasAttribute('fee_amount', $payment);
-    }
-
+    
     public function testPaymentCreate()
     {
-        $this->mockResponse($this->success_payment_create_response());
+        if(!$this->isRemote()){
+            $this->mockResponse($this->success_payment_create_response());
+        }
+        
         $params = array(
             'card_number'       => '4111111111111111',
             'expiration_month'  => '01',
@@ -39,12 +33,37 @@ class PaymentTest extends TestCase
         $payment = Payment::create($params);
 
         $this->assertPaymentProperties($payment);
+        
+        return $payment;
     }
 
+    /**
+     * @depends testPaymentCreate
+     */
+    public function testPaymentRetrieve($payment_existing)
+    {
+        if(!$this->isRemote()){
+            $this->mockResponse($this->success_payment_retrieve_response());
+            $token  = 'pmt_4KQ2DD15gs2w8RS4M2MhBz1Q';
+        }else{
+            $token  = $payment_existing->token;
+        }
+
+        $payment = Payment::retrieve($token);
+                
+        $this->assertObjectHasAttribute('token', $payment);
+        $this->assertObjectHasAttribute('status', $payment);
+        $this->assertObjectHasAttribute('amount', $payment);
+        $this->assertObjectHasAttribute('fee_amount', $payment);
+    }
+
+    
     public function testPaymentAuthorize()
     {
-        $this->mockResponse($this->success_payment_authorize_response());
-
+        if(!$this->isRemote()){
+            $this->mockResponse($this->success_payment_authorize_response());
+        }
+        
         $params = array(
             'card_number'       => '4000000000000002',
             'expiration_month'  => '01',
@@ -58,24 +77,42 @@ class PaymentTest extends TestCase
 
         $this->assertPaymentProperties($payment);
         $this->assertEquals('Pre authorized', $payment->status);
+        
+        return $payment;
     }
 
-    public function testPaymentCapture()
+    /**
+     * @depends testPaymentAuthorize
+     */
+    public function testPaymentCapture($payment_existing)
     {
-        $this->mockResponse($this->success_payment_capture_response());
+        if(!$this->isRemote()){
+            $this->mockResponse($this->success_payment_capture_response());
+            $token  = 'pmt_vBbiBMkqyA0YUT5Lz7gS5prY';
+        }else{
+            $token  = $payment_existing->token;
+        }
 
-        $token   = 'pmt_vBbiBMkqyA0YUT5Lz7gS5prY';
         $payment = Payment::capture($token);
 
         $this->assertPaymentProperties($payment);
         $this->assertEquals('Captured', $payment->status);
+        
+        return $payment;
     }
 
-    public function testPaymentVoid()
+    /**
+     * @depends testPaymentCreate
+     */
+    public function testPaymentVoid($payment_existing)
     {
-        $this->mockResponse($this->success_payment_void_response());
-
-        $token   = 'pmt_dWOEowLhaNocgsk339P1RYzX';
+        if(!$this->isRemote()){
+            $this->mockResponse($this->success_payment_void_response());
+            $token   = 'pmt_dWOEowLhaNocgsk339P1RYzX';
+        }else{
+            $token   = $payment_existing->token;
+        }
+        
         $payment = Payment::refund($token);
 
         $this->assertPaymentProperties($payment);
@@ -85,18 +122,27 @@ class PaymentTest extends TestCase
 
     public function testPaymentListAll()
     {
-        $this->mockResponse($this->success_payment_list_all_response());
+        if(!$this->isRemote()){
+            $this->mockResponse($this->success_payment_list_all_response());
+        }
         $collection = Payment::listAll();
 
         $this->assertObjectHasAttribute('total_count', $collection);
         $this->assertObjectHasAttribute('items', $collection);
-        $this->assertEquals(count($collection->items), $collection->total_count);
     }
 
-    public function testPaymentRefund()
+    /**
+     * @depends testPaymentCapture
+     */
+    public function testPaymentRefund($payment_existing)
     {
-        $this->mockResponse($this->success_payment_refund_response());
-        $token = 'pmt_4KQ2DD15gs2w8RS4M2MhBz1Q';
+        if(!$this->isRemote()){
+            $this->mockResponse($this->success_payment_refund_response());
+            $token = 'pmt_4KQ2DD15gs2w8RS4M2MhBz1Q';
+        }else{
+            $token = $payment_existing->token;
+        }
+        
         $payment = Payment::refund($token);
 
         $this->assertTrue($payment->refunded);
@@ -106,7 +152,10 @@ class PaymentTest extends TestCase
 
     public function testPaymentCreatesCustomer()
     {
-        $this->mockResponse($this->success_payment_with_customer_response());
+        if(!$this->isRemote()){
+            $this->mockResponse($this->success_payment_with_customer_response());
+        }
+        
         $params = array(
             'card_number'       => '4111111111111111',
             'expiration_month'  => '01',
@@ -124,7 +173,9 @@ class PaymentTest extends TestCase
 
     public function testAuthorizedPaymentCreatesCustomer()
     {
-        $this->mockResponse($this->success_authorize_with_customer_response());
+        if(!$this->isRemote()){
+            $this->mockResponse($this->success_authorize_with_customer_response());
+        }
         $params = array(
             'card_number'       => '4000000000000002',
             'expiration_month'  => '01',
@@ -147,6 +198,11 @@ class PaymentTest extends TestCase
      */
     public function testPaymentError()
     {
+        if(!$this->isRemote()){
+            $this->markTestSkipped(
+              'Test not available in TEST_ENV REMOTE.'
+            );
+        }
         $this->mockResponse($this->error_payment_response(), 'text/html');
         $token = 'pmt_4KQ2DD15gs2w8RS4M2MhBz1Q';
         $payment = Payment::refund($token);
@@ -158,6 +214,7 @@ class PaymentTest extends TestCase
      */
     public function testPaymentDelete()
     {
+        //applicable both in local and remote mode
         $token = 'pmt_4KQ2DD15gs2w8RS4M2MhBz1Q';
         $payment = Payment::delete($token);
     }
@@ -235,38 +292,7 @@ class PaymentTest extends TestCase
      */
     public function testDeletePaymentNotAllowed()
     {
-        if(!$this->isRemote()){
-            $this->markTestSkipped(
-              'Not applicable in REMOTE TEST_ENV'
-            );
-        }
-        
         Payment::delete('some_token');
-    }
-    
-    public function testCreateVisaPaymentTdsNotAllowedWithCard()
-    {
-        if(!$this->isRemote()){
-            $this->markTestSkipped(
-              'Not applicable in REMOTE TEST_ENV'
-            );
-        }
-        
-        $credentials = $this->getFixtures()->offsetGet('everypay');
-        Everypay::setApiKey($credentials['secret_key']);
-        
-        $params = array(
-            'card_number'       => '4111111111111111',
-            'expiration_month'  => '01',
-            'expiration_year'   => date('Y') + 1,
-            'cvv'               => '123',
-            'holder_name'       => 'John Doe'
-        );
-
-        //$response = Payment::create($params);
-        
-        //$this->assertObjectHasAttribute('error', $response, print_r($response, true));
-        //$this->assertEquals($response->error->code, ApiException::TDS_ONLY_TOKEN_ALLOWED, print_r($response, true));
     }
     
     protected function isRemote(){
