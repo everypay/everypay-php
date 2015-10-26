@@ -43,7 +43,7 @@ require_once 'vendor/autoload.php';
 ```php
 <?php
 
-use Everypay;
+use Everypay\Everypay;
 use Everypay\Payment;
 
 Everypay::setApiKey('sk_YoUraPikEy');
@@ -64,3 +64,14 @@ Payment::create($params);
 ## Documentation
 
 Please see https://www.everypay.gr/api/ for up to date documentation.
+
+## Testing
+
+<?php
+
+//testing with real requests to API
+phpunit.phar --configure phpunit_remote.xml tests/PaymentTest
+
+//testing with mocks locally (default)
+phpunit.phar --configure phpunit_local.xml tests/PaymentTest
+
