@@ -15,6 +15,10 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     protected function mockResponse($answer, $contentType = 'application/json')
     {
 
+        if($this->isRemote()){
+            return;
+        }
+        
         $response = new Http\Response();
         $response = $response->withHeader('Content-Type', $contentType)
             ->withBody($answer);

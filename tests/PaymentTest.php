@@ -14,13 +14,16 @@ class PaymentTest extends TestCase
         Everypay::setApiKey($credentials['secret_key']);
         $apiUri = 'http://api.everypay.local';
         Everypay::setApiUrl($apiUri);
+        //Everypay::$isTest = true;
     }
     
+    /**
+     * 
+     * @group   ecommerce
+     */
     public function testPaymentCreate()
     {
-        if(!$this->isRemote()){
-            $this->mockResponse($this->success_payment_create_response());
-        }
+        $this->mockResponse($this->success_payment_create_response());
         
         $params = array(
             'card_number'       => '4111111111111111',
@@ -38,16 +41,15 @@ class PaymentTest extends TestCase
     }
 
     /**
+     * 
      * @depends testPaymentCreate
+     * @group   ecommerce
      */
     public function testPaymentRetrieve($payment_existing)
     {
-        if(!$this->isRemote()){
-            $this->mockResponse($this->success_payment_retrieve_response());
-            $token  = 'pmt_4KQ2DD15gs2w8RS4M2MhBz1Q';
-        }else{
-            $token  = $payment_existing->token;
-        }
+        $this->mockResponse($this->success_payment_retrieve_response());
+
+        $token  = $payment_existing->token;
 
         $payment = Payment::retrieve($token);
                 
@@ -57,12 +59,14 @@ class PaymentTest extends TestCase
         $this->assertObjectHasAttribute('fee_amount', $payment);
     }
 
-    
+    /**
+     * 
+     * @group   ecommerce
+     */
     public function testPaymentAuthorize()
     {
-        if(!$this->isRemote()){
-            $this->mockResponse($this->success_payment_authorize_response());
-        }
+
+        $this->mockResponse($this->success_payment_authorize_response());
         
         $params = array(
             'card_number'       => '4000000000000002',
@@ -83,15 +87,13 @@ class PaymentTest extends TestCase
 
     /**
      * @depends testPaymentAuthorize
+     * @group   ecommerce
      */
     public function testPaymentCapture($payment_existing)
     {
-        if(!$this->isRemote()){
-            $this->mockResponse($this->success_payment_capture_response());
-            $token  = 'pmt_vBbiBMkqyA0YUT5Lz7gS5prY';
-        }else{
-            $token  = $payment_existing->token;
-        }
+        $this->mockResponse($this->success_payment_capture_response());
+    
+        $token  = $payment_existing->token;
 
         $payment = Payment::capture($token);
 
@@ -103,15 +105,13 @@ class PaymentTest extends TestCase
 
     /**
      * @depends testPaymentCreate
+     * @group   ecommerce
      */
     public function testPaymentVoid($payment_existing)
     {
-        if(!$this->isRemote()){
-            $this->mockResponse($this->success_payment_void_response());
-            $token   = 'pmt_dWOEowLhaNocgsk339P1RYzX';
-        }else{
-            $token   = $payment_existing->token;
-        }
+        $this->mockResponse($this->success_payment_void_response());
+
+        $token   = $payment_existing->token;
         
         $payment = Payment::refund($token);
 
@@ -120,11 +120,15 @@ class PaymentTest extends TestCase
         $this->assertEquals('Refunded', $payment->status);
     }
 
+    /**
+     * 
+     * @group   ecommerce
+     */
     public function testPaymentListAll()
     {
-        if(!$this->isRemote()){
-            $this->mockResponse($this->success_payment_list_all_response());
-        }
+
+        $this->mockResponse($this->success_payment_list_all_response());
+
         $collection = Payment::listAll();
 
         $this->assertObjectHasAttribute('total_count', $collection);
@@ -133,15 +137,13 @@ class PaymentTest extends TestCase
 
     /**
      * @depends testPaymentCapture
+     * @group   ecommerce
      */
     public function testPaymentRefund($payment_existing)
     {
-        if(!$this->isRemote()){
-            $this->mockResponse($this->success_payment_refund_response());
-            $token = 'pmt_4KQ2DD15gs2w8RS4M2MhBz1Q';
-        }else{
-            $token = $payment_existing->token;
-        }
+        $this->mockResponse($this->success_payment_refund_response());
+
+        $token = $payment_existing->token;
         
         $payment = Payment::refund($token);
 
@@ -150,11 +152,12 @@ class PaymentTest extends TestCase
         $this->assertEquals(0, $payment->fee_amount);
     }
 
+    /**
+     * @group   ecommerce
+     */
     public function testPaymentCreatesCustomer()
     {
-        if(!$this->isRemote()){
-            $this->mockResponse($this->success_payment_with_customer_response());
-        }
+        $this->mockResponse($this->success_payment_with_customer_response());
         
         $params = array(
             'card_number'       => '4111111111111111',
@@ -171,11 +174,13 @@ class PaymentTest extends TestCase
         $this->assertObjectHasAttribute('customer', $payment);
     }
 
+    /**
+     * @group   ecommerce
+     */
     public function testAuthorizedPaymentCreatesCustomer()
     {
-        if(!$this->isRemote()){
-            $this->mockResponse($this->success_authorize_with_customer_response());
-        }
+        $this->mockResponse($this->success_authorize_with_customer_response());
+        
         $params = array(
             'card_number'       => '4000000000000002',
             'expiration_month'  => '01',
@@ -195,6 +200,7 @@ class PaymentTest extends TestCase
     /**
      * @expectedException         Everypay\Exception\CurlException
      * @expectedExceptionMessage  The returned response is not in json format
+     * @group                     ecommerce
      */
     public function testPaymentError()
     {
@@ -211,6 +217,7 @@ class PaymentTest extends TestCase
     /**
      * @expectedException         Everypay\Exception\RuntimeException
      * @expectedExceptionMessage  Resource Payments does not support method Everypay\Payment::delete
+     * @group                     ecommerce
      */
     public function testPaymentDelete()
     {
@@ -222,6 +229,7 @@ class PaymentTest extends TestCase
     /**
      * @expectedException         Everypay\Exception\RuntimeException
      * @expectedExceptionMessage  Resource Payments does not support method Everypay\Payment::update
+     * @group                     ecommerce
      */
     public function testPaymentUpdate()
     {
@@ -230,9 +238,12 @@ class PaymentTest extends TestCase
         $payment = Payment::update($token, array());
     }
 
+    /**
+     * @group   ecommerce
+     */
     private function assertPaymentProperties($payment)
     {
-        $this->assertObjectHasAttribute('token', $payment);
+        $this->assertObjectHasAttribute('token', $payment, print_r($payment, true));
         $this->assertObjectHasAttribute('status', $payment);
         $this->assertObjectHasAttribute('amount', $payment);
         $this->assertObjectHasAttribute('fee_amount', $payment);

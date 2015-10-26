@@ -5,8 +5,6 @@
 namespace Everypay\Action;
 
 use Everypay\TestCase;
-use Everypay\Everypay;
-use Everypay\Http\Client\CurlClient;
 
 class CreateTest extends TestCase
 {

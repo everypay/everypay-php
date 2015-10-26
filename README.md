@@ -67,11 +67,15 @@ Please see https://www.everypay.gr/api/ for up to date documentation.
 
 ## Testing
 
+1. ill in your API keys in file fixtures.ini (sandbox API key)
+2. ecommerce
+
+
 <?php
 
 //testing with real requests to API
-phpunit.phar --configure phpunit_remote.xml tests/PaymentTest
+phpunit.phar --configuration phpunit_remote.xml tests/PaymentTest
 
 //testing with mocks locally (default)
-phpunit.phar --configure phpunit_local.xml tests/PaymentTest
+phpunit.phar --configuration phpunit_local.xml tests/PaymentTest
 
