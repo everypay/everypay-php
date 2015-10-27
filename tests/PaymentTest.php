@@ -12,9 +12,7 @@ class PaymentTest extends TestCase
     {   
         $credentials = $this->getFixtures()->offsetGet('everypay');
         Everypay::setApiKey($credentials['secret_key']);
-        $apiUri = 'http://api.everypay.local';
-        Everypay::setApiUrl($apiUri);
-        //Everypay::$isTest = true;
+        Everypay::$isTest = true;
     }
     
     /**
