@@ -5,6 +5,11 @@
     backupStaticAttributes      = "false"
     colors                      = "true"
     bootstrap                   = "vendor/autoload.php">
+    <testsuites>
+        <testsuite name="default">
+            <directory>tests</directory>
+        </testsuite>
+    </testsuites>
     <filter>
         <whitelist>
             <directory suffix=".php">src/</directory> 

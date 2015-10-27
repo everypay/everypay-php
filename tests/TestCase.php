@@ -34,4 +34,12 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 
         AbstractResource::setClient($client);
     }
+    
+    protected function isRemote(){
+        if(TEST_ENV == 'REMOTE'){
+            return 1;
+        }else if(TEST_ENV == 'LOCAL'){
+            return 0;
+        }
+    }
 }

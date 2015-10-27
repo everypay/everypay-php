@@ -84,14 +84,16 @@ Then, in root folder run one of the following available commands.
 <?php
 
 //command-1: testing with real requests to API 3D-Secure account
-phpunit.phar --configuration ./phpunit_remote.xml --group 3dsecure tests/PaymentTest
+phpunit.phar --configuration ./phpunit_remote.xml --group 3dsecure
 
 //command-2: testing with real requests to API eCommerce account
-phpunit.phar --configuration ./phpunit_remote.xml --group ecommerce tests/PaymentTest
+phpunit.phar --configuration ./phpunit_remote.xml --group ecommerce
 
-//command-3: testing locally with mocks
-phpunit.phar --configuration ./phpunit_local.xml tests/PaymentTest
+//command-3: testing locally with mocks (default)
+phpunit.phar --configuration ./phpunit_local.xml
 ```
+
+You may provide a specific test file at the end of each command (eg tests/PaymentTests.php) or else all tests will be performed.
 
 <b>Note:</b> if you try to run one of the "live" API commands that does not respond to your exact account type (3D-Secure or eCommerce) then that tests may fail or be skipped.
 

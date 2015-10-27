@@ -11,8 +11,13 @@ class CustomerTest extends TestCase
         $credentials = $this->getFixtures()->offsetGet('everypay');
         Everypay::setApiKey($credentials['secret_key_tokenization']);
         Customer::setClientOption(Http\Client\CurlClient::SSL_VERIFY_PEER, 0);
+        Everypay::$isTest = true;
     }
 
+    /**
+     * 
+     * @group   ecommerce
+     */
     public function testCustomerCreate()
     {
         $params = array(
@@ -28,35 +33,49 @@ class CustomerTest extends TestCase
 
         $this->assertTrue($customer->is_active);
         $this->assertNotNull($customer->token);
+        
+        return $customer;
     }
 
-    public function testCustomerRetrieve()
+    /**
+     * @depends testCustomerCreate
+     * @group   ecommerce
+     */
+    public function testCustomerRetrieve($customer_exists)
     {
-        $token = 'cus_zDdjHBuNW3do8G3jaTqApzsI';
+        //$token = 'cus_zDdjHBuNW3do8G3jaTqApzsI';
         $this->mockResponse($this->success_customer_retrieve_response());
-        $customer = Customer::retrieve($token);
+        $customer = Customer::retrieve($customer_exists->token);
 
         $this->assertTrue($customer->is_active);
         $this->assertNotNull($customer->token);
     }
 
-    public function testCustomerUpdate()
+    /**
+     * @depends testCustomerCreate
+     * @group   ecommerce
+     */
+    public function testCustomerUpdate($customer_exists)
     {
-        $token = 'cus_zDdjHBuNW3do8G3jaTqApzsI';
+        //$token = 'cus_zDdjHBuNW3do8G3jaTqApzsI';
         $this->mockResponse($this->success_customer_update_response());
         $params = array(
             'email' => 'john_dow@example.com',
             'full_name' => 'John Doe'
         );
-        $customer = Customer::update($token, $params);
+        $customer = Customer::update($customer_exists->token, $params);
 
         $this->assertNotNull($customer->email);
         $this->assertNotNull($customer->full_name);
     }
 
-    public function testCustomerUpdateFromCard()
+    /**
+     * @depends testCustomerCreate
+     * @group   ecommerce
+     */
+    public function testCustomerUpdateFromCard($customer_exists)
     {
-        $token = 'cus_FaWhNhFT5gEAAv5BArjJSIIq';
+        //$token = 'cus_FaWhNhFT5gEAAv5BArjJSIIq';
         $this->mockResponse($this->success_customer_update_card_response());
         $params = array(
             'card_number'       => '4908440000000003',
@@ -65,31 +84,39 @@ class CustomerTest extends TestCase
             'cvv'               => '123',
             'holder_name'       => 'John Doe'
         );
-        $customer = Customer::update($token, $params);
+        $customer = Customer::update($customer_exists->token, $params);
 
         $this->assertEquals(substr($params['card_number'], -4), $customer->card->last_four);
     }
 
-    public function testCustomerDelete()
+    /**
+     * @depends testCustomerCreate
+     * @group   ecommerce
+     */
+    public function testCustomerListAll($customer_exists)
     {
-        $token = 'cus_zDdjHBuNW3do8G3jaTqApzsI';
+        //$token0 = 'cus_zDdjHBuNW3do8G3jaTqApzsI';
+        $this->mockResponse($this->success_customer_listAll_response());
+        $customers = Customer::listAll(array('count'=>2));
+
+        $this->assertGreaterThan(0, count($customers->items));
+        $this->assertEquals($customers->items[0]->token, $customer_exists->token);
+    }
+    
+    /**
+     * @depends testCustomerCreate
+     * @group   ecommerce
+     */
+    public function testCustomerDelete($customer_exists)
+    {
+        //$token = 'cus_zDdjHBuNW3do8G3jaTqApzsI';
         $this->mockResponse($this->success_customer_delete_response());
 
-        $customer = Customer::delete($token);
+        $customer = Customer::delete($customer_exists->token);
 
         $this->assertNotNull($customer->token);
         $this->assertNotNull($customer->email);
         $this->assertFalse($customer->is_active);
-    }
-
-    public function testCustomerListAll()
-    {
-        $token0 = 'cus_zDdjHBuNW3do8G3jaTqApzsI';
-        $this->mockResponse($this->success_customer_listAll_response());
-        $customers = Customer::listAll(array('count'=>2));
-
-        $this->assertEquals($customers->total_count, 6);
-        $this->assertEquals($customers->items[0]->token, $token0);
     }
 
     private function success_customer_create_response()
