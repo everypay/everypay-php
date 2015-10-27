@@ -9,13 +9,13 @@ class CustomerTest extends TestCase
     public function setUp()
     {
         $credentials = $this->getFixtures()->offsetGet('everypay');
-        Everypay::setApiKey($credentials['secret_key_tokenization']);
+        Everypay::setApiKey($credentials['secret_key']);
         Customer::setClientOption(Http\Client\CurlClient::SSL_VERIFY_PEER, 0);
         Everypay::$isTest = true;
     }
 
     /**
-     * 
+     * @group   3dsecure
      * @group   ecommerce
      */
     public function testCustomerCreate()
