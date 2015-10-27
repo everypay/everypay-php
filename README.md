@@ -67,15 +67,39 @@ Please see https://www.everypay.gr/api/ for up to date documentation.
 
 ## Testing
 
-1. ill in your API keys in file fixtures.ini (sandbox API key)
-2. ecommerce
+First fill in your API keys in file fixtures.ini (please provide your sandbox-account API key).
 
+Then, in root folder run one of the following available commands.
 
+<ul>
+<li>command-1 makes real API requests and applies to a 3D Secure account type.
+</li>
+<li>command-2 makes real API requests and applies to an eCommerce account type.
+</li>
+<li>command-3 just performs local tests that do not make any real calls anywhere.
+</li>
+</ul>
+
+```php
 <?php
 
-//testing with real requests to API
-phpunit.phar --configuration phpunit_remote.xml tests/PaymentTest
+//command-1: testing with real requests to API 3D-Secure account
+phpunit.phar --configuration ./phpunit_remote.xml --group 3dsecure tests/PaymentTest
 
-//testing with mocks locally (default)
-phpunit.phar --configuration phpunit_local.xml tests/PaymentTest
+//command-2: testing with real requests to API eCommerce account
+phpunit.phar --configuration ./phpunit_remote.xml --group ecommerce tests/PaymentTest
 
+//command-3: testing locally with mocks
+phpunit.phar --configuration ./phpunit_local.xml tests/PaymentTest
+```
+
+<b>Note:</b> if you try to run one of the "live" API commands that does not respond to your exact account type (3D-Secure or eCommerce) then that tests may fail or be skipped.
+
+As regards the "live" API requests (commands 1 and 2) make sure that in every test file, inside <b>public function setUp</b>, you safely provide the following command (already provided  by default) in order for the calls to be redirected to your appropriate sandbox account rather than the real account.
+
+```php
+<?php
+Everypay::$isTest = true;
+```
+
+<b>Attention:</b> not providing this command <b>along with</b> filling a real API key rather than  the sandbox API key, will make your remote test calls (see commands 1 and 2 above) to be directed to your real account and therefore may result in real charges!
