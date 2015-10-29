@@ -38,6 +38,30 @@ class PaymentTest extends TestCase
     
     /**
      * 
+     * @group   ecommerce
+     */
+    public function testPaymentInstallments()
+    {
+        $this->mockResponse($this->success_payment_installments_response());
+        
+        $params = array(
+            'card_number'       => '4908440000000003',
+            'expiration_month'  => '08',
+            'expiration_year'   => date('Y') + 1,
+            'cvv'               => '123',
+            'holder_name'       => 'John Doe',
+            'amount'            => 10480,
+            'installments'      => 3
+        );
+        $payment = Payment::create($params);
+
+        $this->assertPaymentProperties($payment);
+        $this->assertEquals($payment->installments_count, 3);
+        $this->assertEquals(count($payment->installments), 3);
+    }
+    
+    /**
+     * 
      * @group   3dsecure
      */
     public function testPaymentCreateNotAllowed()
@@ -350,12 +374,21 @@ class PaymentTest extends TestCase
 
     private function success_payment_retrieve_response()
     {
-        return '{ "token": "pmt_4KQ2DD15gs2w8RS4M2MhBz1Q", "date_created": "2015-07-06T18:05:01+0300", "description": "payment for item #222", "currency": "EUR", "status": "Captured", "amount": 50, "refund_amount": 0, "fee_amount": 21, "payee_email": null, "payee_phone": null, "refunded": false, "refunds": [], "card": { "expiration_month": "10", "expiration_year": "2017", "last_four": "9610", "type": "Visa", "holder_name": "John Doe" } }';
+        return '{ "token": "pmt_4KQ2DD15gs2w8RS4M2MhBz1Q", "date_created": "2015-07-06T18:05:01+0300", "description": "payment for item #222", "currency": "EUR", "status": "Captured", "amount": 50, "refund_amount": 0, "fee_amount": 21, "payee_email": null, "payee_phone": null, "refunded": false, "refunds": [], "installments_count": 0, "installments": [], "installments_count": 0, "card": { "expiration_month": "10", "expiration_year": "2017", "last_four": "9610", "type": "Visa", "holder_name": "John Doe" , "supports_installments": false, "max_installments": 0 } }';
     }
 
     private function success_payment_create_response()
     {
-        return '{ "token": "pmt_guLEyWbxfj9zosdIeyUIWOWP", "date_created": "2015-07-08T18:05:50+0300", "description": null, "currency": "EUR", "status": "Captured", "amount": 100, "refund_amount": 0, "fee_amount": 22, "payee_email": null, "payee_phone": null, "refunded": false, "refunds": [], "card": { "expiration_month": "01", "expiration_year": "2016", "last_four": "1111", "type": "Visa", "holder_name": "John Doe" } }';
+        return '{ "token": "pmt_guLEyWbxfj9zosdIeyUIWOWP", "date_created": "2015-07-08T18:05:50+0300", "description": null, "currency": "EUR", "status": "Captured", "amount": 100, "refund_amount": 0, "fee_amount": 22, "payee_email": null, "payee_phone": null, "refunded": false, "refunds": [], "installments_count": 0, "installments": [], "card": { "expiration_month": "01", "expiration_year": "2016", "last_four": "1111", "type": "Visa", "holder_name": "John Doe", "supports_installments": false, "max_installments": 0 } }';
+    }
+    
+    private function success_payment_installments_response()
+    {
+        return '{ "token": "pmt_DdEFKTO2lhRZjIpgMcJqj899", "date_created": "2015-10-05T17:37:41+0300", "description": null, "currency": "EUR", "status": "Captured", "amount": 10480, "refund_amount": 0, "fee_amount": 312, "payee_email": null, "payee_phone": null, "refunded": false, "refunds": [], "installments_count": 3, "installments": [
+            { "token": "pmt_VFDPv5oBSq3ulnlamgKFSSaM", "date_created": "2015-10-05T17:37:41+0300", "due_date": "2015-10-06T21:00:00+0300", "currency": "EUR", "status": "Pending installment", "amount": 3500, "fee_amount": 104 },
+            { "token": "pmt_GMFBFJ2z7EVhtN7HgmbVag6k", "date_created": "2015-10-05T17:37:41+0300", "due_date": "2015-11-05T21:00:00+0200", "currency": "EUR", "status": "Pending installment", "amount": 3500, "fee_amount": 104 },
+            { "token": "pmt_ynvYNpYn5mn9VARuwB4ZbVXY", "date_created": "2015-10-05T17:37:41+0300", "due_date": "2015-12-07T21:00:00+0200", "currency": "EUR", "status": "Pending installment", "amount": 3480, "fee_amount": 104}
+            ], "card": { "expiration_month": "08", "expiration_year": "2016", "last_four": "0003", "type": "Visa", "holder_name": "John Doe", "supports_installments": true, "max_installments": 3 } }';
     }
 
     private function failed_payment_create_response()
