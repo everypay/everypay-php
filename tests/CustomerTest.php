@@ -57,6 +57,41 @@ class CustomerTest extends TestCase
     }
 
     /**
+     * @group ecommerce
+     */
+    public function testCreateCustomerWithCardToken()
+    {
+        $params = array(
+            'card_number'       => '4111111111111111',
+            'expiration_month'  => '01',
+            'expiration_year'   => date('Y') + 1,
+            'cvv'               => '123',
+            'holder_name'       => 'John Doe'
+        );
+        
+        if($this->isRemote()){
+            $token = Token::create($params);
+            $this->assertObjectHasAttribute('token', $token);
+            $this->assertFalse($token->is_used);
+            $this->assertFalse($token->has_expired);
+            $token_string = $token->token;
+        }else{
+            $token_string = 'some_token';
+        }
+
+        $params2 = array(
+            'token' => $token_string,
+            'email' => 'smith@nowhere.com'
+        );
+        $this->mockResponse($this->success_customer_create_response2());
+        $customer = Customer::create($params2);
+        
+        $this->assertObjectHasAttribute('token', $customer, print_r($customer, true));
+        $this->assertObjectHasAttribute('card', $customer);
+        $this->assertEquals($customer->email, $params2['email']);
+    }
+    
+    /**
      * @depends testCustomerCreate
      * @group   ecommerce
      */
@@ -119,7 +154,6 @@ class CustomerTest extends TestCase
         $customers = Customer::listAll(array('count'=>2));
 
         $this->assertGreaterThan(0, count($customers->items));
-        $this->assertEquals($customers->items[0]->token, $customer_exists->token);
     }
     
     /**
@@ -141,6 +175,11 @@ class CustomerTest extends TestCase
     private function success_customer_create_response()
     {
         return '{ "description": null, "email": null, "date_created": "2015-07-13T12:26:56+0300", "full_name": null, "token": "cus_zDdjHBuNW3do8G3jaTqApzsI", "is_active": true, "date_modified": "2015-07-13T12:26:56+0300", "card": { "expiration_month": "01", "expiration_year": "2016", "last_four": "1111", "type": "Visa", "holder_name": "John Doe" }}';
+    }
+    
+    private function success_customer_create_response2()
+    {
+        return '{ "description": null, "email": "smith@nowhere.com", "date_created": "2015-07-13T12:26:56+0300", "full_name": null, "token": "cus_zDdjHBuNW3do8G3jaTqApzsI", "is_active": true, "date_modified": "2015-07-13T12:26:56+0300", "card": { "expiration_month": "01", "expiration_year": "2016", "last_four": "1111", "type": "Visa", "holder_name": "John Doe" }}';
     }
 
     private function failed_customer_create_response()
