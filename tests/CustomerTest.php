@@ -15,7 +15,6 @@ class CustomerTest extends TestCase
     }
 
     /**
-     * @group   3dsecure
      * @group   ecommerce
      */
     public function testCustomerCreate()
@@ -35,6 +34,26 @@ class CustomerTest extends TestCase
         $this->assertNotNull($customer->token);
         
         return $customer;
+    }
+    
+    /**
+     * @group   3dsecure
+     */
+    public function testCustomerCreateNotAllowed()
+    {
+        $params = array(
+            'card_number'       => '4111111111111111',
+            'expiration_month'  => '01',
+            'expiration_year'   => date('Y') + 1,
+            'cvv'               => '123',
+            'holder_name'       => 'John Doe'
+        );
+
+        $this->mockResponse($this->failed_customer_create_response());
+        $customer = Customer::create($params);
+        
+        $this->assertObjectHasAttribute('error', $customer);
+        $this->assertEquals($customer->error->code, 20016);
     }
 
     /**
@@ -124,6 +143,11 @@ class CustomerTest extends TestCase
         return '{ "description": null, "email": null, "date_created": "2015-07-13T12:26:56+0300", "full_name": null, "token": "cus_zDdjHBuNW3do8G3jaTqApzsI", "is_active": true, "date_modified": "2015-07-13T12:26:56+0300", "card": { "expiration_month": "01", "expiration_year": "2016", "last_four": "1111", "type": "Visa", "holder_name": "John Doe" }}';
     }
 
+    private function failed_customer_create_response()
+    {
+        return '{ "error": { "status": 400, "code": 20016, "message": "Your account does not support tokenization."} }';
+    }
+    
     private function success_customer_retrieve_response()
     {
         return '{ "description": null, "email": null, "date_created": "2015-07-13T12:26:56+0300", "full_name": null, "token": "cus_zDdjHBuNW3do8G3jaTqApzsI", "is_active": true, "date_modified": "2015-07-13T12:26:56+0300", "card": { "expiration_month": "01", "expiration_year": "2016", "last_four": "1111", "type": "Visa", "holder_name": "John Doe" } }';
