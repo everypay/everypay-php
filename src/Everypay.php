@@ -110,7 +110,7 @@ class Everypay
             : self::$apiUrl;
     }
 
-    public function throwExceptions()
+    public static function throwExceptions()
     {
         return false;
     }
