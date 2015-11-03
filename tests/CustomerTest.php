@@ -59,7 +59,7 @@ class CustomerTest extends TestCase
     /**
      * @group ecommerce
      */
-    public function testCreateCustomerWithCardToken()
+    public function testCustomerCreateWithCardToken()
     {
         $params = array(
             'card_number'       => '4111111111111111',
@@ -89,6 +89,18 @@ class CustomerTest extends TestCase
         $this->assertObjectHasAttribute('token', $customer, print_r($customer, true));
         $this->assertObjectHasAttribute('card', $customer);
         $this->assertEquals($customer->email, $params2['email']);
+    }
+    
+    /**
+     * @group ecommerce
+     */
+    public function testCustomerCreateWithoutCardParams()
+    {
+        $this->mockResponse($this->failed_customer_create_response2());
+        $response = Customer::create(array());
+        
+        $this->assertObjectHasAttribute('error', $response);
+        $this->assertEquals($response->error->code, 20000);
     }
     
     /**
@@ -185,6 +197,11 @@ class CustomerTest extends TestCase
     private function failed_customer_create_response()
     {
         return '{ "error": { "status": 400, "code": 20016, "message": "Your account does not support tokenization."} }';
+    }
+    
+    private function failed_customer_create_response2()
+    {
+        return '{ "error": { "status": 400, "code": 20000, "message": "Invalid card number. Please try again or use another card."} }';
     }
     
     private function success_customer_retrieve_response()

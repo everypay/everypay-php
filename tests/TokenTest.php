@@ -37,7 +37,8 @@ class TokenTest extends TestCase
     }
     
     /**
-     * This is not generally forbidden, just not from this environment (curl request).
+     * This is not generally forbidden for 3D-Secure account,
+     * just not allowed from this environment (curl request) for 3D-Secure account.
      * 
      * @group   3dsecure
      */
@@ -54,7 +55,7 @@ class TokenTest extends TestCase
         $response = Token::create($params);
 
         $this->assertObjectHasAttribute('error', $response);
-        //$this->assertEquals($response->error->code, 99999); //FIXME: this used to be 20013?
+        $this->assertEquals($response->error->code, 20013);
     }
 
     /**
@@ -115,7 +116,7 @@ class TokenTest extends TestCase
      * 
      * @group   ecommerce
      */
-    public function testCreateCardTokenWithInvalidExpirationYear()
+    public function testTokenCreateWithInvalidExpirationYear()
     {
         $params = array(
             'card_number'       => '4111111111111111',
@@ -135,7 +136,7 @@ class TokenTest extends TestCase
      * 
      * @group   ecommerce
      */
-    public function testCreateCardTokenWithExpiredCard()
+    public function testTokenCreateWithExpiredCard()
     {
         $params = array(
             'card_number'       => '4111111111111111',
@@ -155,7 +156,7 @@ class TokenTest extends TestCase
      * 
      * @group   ecommerce
      */
-    public function testCreateCardTokenWithInvalidExpirationMonth()
+    public function testTokenCreateWithInvalidExpirationMonth()
     {
         $params = array(
             'card_number'       => '4111111111111111',
@@ -175,7 +176,7 @@ class TokenTest extends TestCase
      * 
      * @group   ecommerce
      */
-    public function testCreateCardTokenWithInvalidCvv()
+    public function testTokenCreateWithInvalidCvv()
     {
         $params = array(
             'card_number'       => '4111111111111111',

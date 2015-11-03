@@ -40,6 +40,136 @@ class PaymentTest extends TestCase
      * 
      * @group   ecommerce
      */
+    public function testPaymentCreateFromCardToken()
+    {
+        $this->mockResponse($this->success_payment_create_response());
+        
+        $params = array(
+            'card_number'       => '4111111111111111',
+            'expiration_month'  => '01',
+            'expiration_year'   => date('Y') + 1,
+            'cvv'               => '123',
+            'holder_name'       => 'John Doe',
+            'amount'            => 900
+        );
+        
+        if($this->isRemote()){
+            $token          = Token::create($params);
+            $token_string   = $token->token;
+        }else{
+            $token_string = 'ctn_foobar';
+        }
+        
+        $params2 = array(
+            'token'       => $token_string,
+        );
+        $payment = Payment::create($params2);
+
+        $this->assertPaymentProperties($payment);
+    }
+    
+    /**
+     * 
+     * @group   ecommerce
+     */
+    public function testPaymentCreateFromCardTokenProvidedDifferentAmount()
+    {
+        $this->mockResponse($this->failed_payment_create_response2());
+        
+        $params = array(
+            'card_number'       => '4111111111111111',
+            'expiration_month'  => '01',
+            'expiration_year'   => date('Y') + 1,
+            'cvv'               => '123',
+            'holder_name'       => 'John Doe',
+            'amount'            => 900
+        );
+        
+        if($this->isRemote()){
+            $token          = Token::create($params);
+            $token_string   = $token->token;
+        }else{
+            $token_string = 'ctn_foobar';
+        }
+        
+        $params2 = array(
+            'token'       => $token_string,
+            'amount'      => 850
+        );
+        $payment = Payment::create($params2);
+
+        $this->assertObjectHasAttribute('error', $payment);
+        $this->assertEquals($payment->error->code, 40029);
+    }
+    
+    /**
+     * 
+     * @group   ecommerce
+     */
+    public function testPaymentCreateFromCardTokenProvidedNoAmount()
+    {
+        $this->mockResponse($this->failed_payment_create_response3());
+        
+        $params = array(
+            'card_number'       => '4111111111111111',
+            'expiration_month'  => '01',
+            'expiration_year'   => date('Y') + 1,
+            'cvv'               => '123',
+            'holder_name'       => 'John Doe'
+        );
+        
+        if($this->isRemote()){
+            $token          = Token::create($params);
+            $token_string   = $token->token;
+        }else{
+            $token_string = 'ctn_foobar';
+        }
+        
+        $params2 = array(
+            'token'       => $token_string
+        );
+        $payment = Payment::create($params2);
+
+        $this->assertObjectHasAttribute('error', $payment);
+        $this->assertEquals($payment->error->code, 40002);
+    }
+    
+    /**
+     * 
+     * @group   ecommerce
+     */
+    public function testPaymentCreateFromCustomerToken()
+    {
+        $this->mockResponse($this->success_payment_create_response());
+        
+        $params = array(
+            'card_number'       => '4111111111111111',
+            'expiration_month'  => '01',
+            'expiration_year'   => date('Y') + 1,
+            'cvv'               => '123',
+            'holder_name'       => 'John Doe'
+        );
+        
+        if($this->isRemote()){
+            $customer       = Customer::create($params);
+            $token_string   = $customer->token;
+        }else{
+            $token_string = 'cus_foobar';
+        }
+        
+        $params2 = array(
+            'token'       => $token_string,
+            'amount'      => 650
+        );
+        $payment = Payment::create($params2);
+
+        $this->assertPaymentProperties($payment);
+    }
+    
+    /**
+     * 
+     * @group   ecommerce
+     */
     public function testPaymentInstallments()
     {
         $this->mockResponse($this->success_payment_installments_response());
@@ -61,6 +191,8 @@ class PaymentTest extends TestCase
     }
     
     /**
+     * This is not allowed from this environment (curl request) for 3D-Secure
+     * account.
      * 
      * @group   3dsecure
      */
@@ -394,6 +526,16 @@ class PaymentTest extends TestCase
     private function failed_payment_create_response()
     {
         return '{ "error": { "status": 400, "code": 20011, "message": "3D Secure enabled. Only token payments are allowed"} }';
+    }
+    
+    private function failed_payment_create_response2()
+    {
+        return '{ "error": { "status": 400, "code": 40029, "message": "Given amount is not the same that used on token creation."} }';
+    }
+    
+    private function failed_payment_create_response3()
+    {
+        return '{ "error": { "status": 400, "code": 40002, "message": "The amount parameter is invalid. Min. 30 cents"} }';
     }
     
     private function success_payment_list_all_response()

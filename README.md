@@ -46,7 +46,17 @@ require_once 'vendor/autoload.php';
 use Everypay\Everypay;
 use Everypay\Payment;
 
+/**
+ * Either your live secret API key or your sandbox secret API key.
+ */
 Everypay::setApiKey('sk_YoUraPikEy');
+
+/** 
+ * Set this true to test your sandbox account (also provide your sandbox secret API key above).
+ * Ommit it or set it false to actually use your live account (also provide your live secret API key above 
+ * - but be carefull, this is no longer a test!).
+ */
+Everypay::$isTest = true;
 
 $params = array(
     'card_number'       => '4111111111111111',
@@ -95,7 +105,7 @@ phpunit.phar --configuration ./phpunit_local.xml
 
 You may provide a specific test file at the end of each command (eg tests/PaymentTests.php) or else all tests will be performed.
 
-<b>Note:</b> if you try to run one of the "live" API commands that does not respond to your exact account type (3D-Secure or eCommerce) then that tests may fail or be skipped.
+<b>Note:</b> if you try to run one of the "live" API commands (1 or 2) that does not respond to your exact account type (3D-Secure or eCommerce) then that tests may fail or be skipped.
 
 As regards the "live" API requests (commands 1 and 2) make sure that in every test file, inside <b>public function setUp</b>, you safely provide the following command (already provided  by default) in order for the calls to be redirected to your appropriate sandbox account rather than the real account.
 
