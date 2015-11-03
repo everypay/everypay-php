@@ -94,20 +94,26 @@ Then, in root folder run one of the following available commands.
 <?php
 
 //command-1: testing with real requests to API 3D-Secure account
-phpunit.phar --configuration ./phpunit_remote.xml --group 3dsecure
+phpunit --configuration ./phpunit_remote.xml --group 3dsecure
 
 //command-2: testing with real requests to API eCommerce account
-phpunit.phar --configuration ./phpunit_remote.xml --group ecommerce
+phpunit --configuration ./phpunit_remote.xml --group ecommerce
 
 //command-3: testing locally with mocks (default)
-phpunit.phar --configuration ./phpunit_local.xml
+phpunit --configuration ./phpunit_local.xml
 ```
 
-You may provide a specific test file at the end of each command (eg tests/PaymentTests.php) or else all tests will be performed.
+You may provide a specific test file at the end of each command (eg tests/PaymentTests.php) or else all tests will be performed (default).
 
-<b>Note:</b> if you try to run one of the "live" API commands (1 or 2) that does not respond to your exact account type (3D-Secure or eCommerce) then that tests may fail or be skipped.
+<b>Note 1:</b> if you try to run one of the "live" API commands (1 or 2) that does not respond to your exact account type (3D-Secure or eCommerce) then that tests may fail or be skipped.
 
-As regards the "live" API requests (commands 1 and 2) make sure that in every test file, inside <b>public function setUp</b>, you safely provide the following command (already provided  by default) in order for the calls to be redirected to your appropriate sandbox account rather than the real account.
+<b>Note 2:</b> if you do not have phpunit installed in your system, you may use composer to install it (provided you have already installed composer itself).
+```shell
+//in everypay-php root folder
+composer update
+```
+
+<b>Note 3:</b> as regards the "live" API requests (commands 1 and 2) make sure that in every test file, inside <b>public function setUp</b>, you safely provide the following command (already provided  by default) in order for the calls to be redirected to your appropriate sandbox account rather than the real account.
 
 ```php
 <?php
