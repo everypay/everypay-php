@@ -1,3 +1,4 @@
 vendor
 build
 tests/fixtures.ini
+composer.phar
