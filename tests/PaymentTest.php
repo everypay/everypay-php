@@ -106,7 +106,7 @@ class PaymentTest extends TestCase
             $token          = Token::create($params);
             $token_string   = $token->token;
         }else{
-            $token_string = 'ctn_foobar';
+            $token_string = 'ctn_n8jMLTrjPeRvlHkch0mmWkGU';
         }
         
         $params2 = array(
@@ -115,6 +115,8 @@ class PaymentTest extends TestCase
         $payment = Payment::create($params2);
 
         $this->assertPaymentProperties($payment);
+        
+        return $token_string;
     }
     
     /**
@@ -123,23 +125,23 @@ class PaymentTest extends TestCase
      */
     public function testPaymentCreateCustomerFromCardToken()
     {
-        $this->mockResponse($this->success_payment_create_customer_response());
-        
+        $this->mockResponse($this->success_payment_create_customer_response2());
+
         $params = array(
-            'card_number'       => '4111111111111111',
-            'expiration_month'  => '01',
+            'card_number'       => '4908440000000003',
+            'expiration_month'  => '08',
             'expiration_year'   => date('Y') + 1,
             'cvv'               => '123',
             'holder_name'       => 'John Doe'
         );
-        
+
         if($this->isRemote()){
             $token          = Token::create($params);
             $token_string   = $token->token;
         }else{
             $token_string = 'ctn_IWCqtxmrTrKgMNS72Wz1aFVy';
         }
-        
+
         $params2 = array(
             'token'       => $token_string,
             'create_customer' => 1,
@@ -302,7 +304,7 @@ class PaymentTest extends TestCase
     public function testPaymentInstallments()
     {
         $this->mockResponse($this->success_payment_installments_response());
-        
+
         $params = array(
             'card_number'       => '4908440000000003',
             'expiration_month'  => '08',
@@ -317,7 +319,55 @@ class PaymentTest extends TestCase
         $this->assertPaymentProperties($payment);
         $this->assertEquals($payment->installments_count, 3);
         $this->assertEquals(count($payment->installments), 3);
+        $this->assertEquals($params['amount'], $payment->installments[0]->amount
+                + $payment->installments[1]->amount
+                + $payment->installments[2]->amount );
     }
+    
+    /**
+     * @depends testPaymentCreateCustomerFromCardToken
+     * @group   ecommerce
+     */
+    public function testPaymentInstallmentsFromCustomerToken($customer)
+    {
+        $this->mockResponse($this->success_payment_installments_from_customer_token_response());
+
+        $params = array(
+            'token'             => $customer->token,
+            'amount'            => 1099,
+            'installments'      => 2
+        );
+        $payment = Payment::create($params);
+
+        $this->assertPaymentProperties($payment);
+        $this->assertEquals($payment->installments_count, 2);
+        $this->assertEquals(count($payment->installments), 2);
+        $this->assertEquals($params['amount'], $payment->installments[0]->amount
+                + $payment->installments[1]->amount);
+    }
+    
+    /**
+     * @depends testPaymentCreateFromCardToken
+     * @group   ecommerce
+     */
+    //FIXME
+    /*public function testPaymentInstallmentsFromCardToken($token_string)
+    {
+        $this->mockResponse($this->success_payment_installments_response2());
+
+        $params = array(
+            'token'             => $token_string,
+            'amount'            => 1099,
+            'installments'      => 2
+        );
+        $payment = Payment::create($params);
+
+        $this->assertPaymentProperties($payment);
+        $this->assertEquals($payment->installments_count, 2);
+        $this->assertEquals(count($payment->installments), 2);
+        $this->assertEquals($params['amount'], $payment->installments[0]->amount
+                + $payment->installments[1]->amount);
+    }*/
     
     /**
      * This is not allowed from this environment (curl request) for 3D-Secure
@@ -627,7 +677,7 @@ class PaymentTest extends TestCase
 
     private function assertPaymentProperties($payment)
     {
-        $this->assertObjectHasAttribute('token', $payment, print_r($payment, true));
+        $this->assertObjectHasAttribute('token', $payment);
         $this->assertObjectHasAttribute('status', $payment);
         $this->assertObjectHasAttribute('amount', $payment);
         $this->assertObjectHasAttribute('fee_amount', $payment);
@@ -648,6 +698,12 @@ class PaymentTest extends TestCase
         return '{ "token": "pmt_8S6CdhqklLIiIjLKRj5k9crb", "date_created": "2015-11-08T18:05:50+0300", "description": null, "currency": "EUR", "status": "Captured", "amount": 1099, "refund_amount": 0, "fee_amount": 34, "payee_email": null, "payee_phone": null, "refunded": false, "refunds": [], "installments_count": 0, "installments": [], "customer": { "description": null, "email": null, "date_created": "2015-11-05T12:38:04+0200", "full_name": "John Doe", "token": "cus_qxVtpVXe1VrHdcEzSqaz9KwW", "is_active": true, "date_modified": "2015-11-05T12:38:04+0200", "card": { "expiration_month": "01", "expiration_year": "2016", "last_four": "1111", "type": "Visa", "holder_name": "John Doe", "supports_installments": false, "max_installments": 0 } } }';
     }
     
+    /*creation of customer (upon succesfull payment) with card that supports installments*/
+    private function success_payment_create_customer_response2()
+    {
+        return '{ "token": "pmt_8S6CdhqklLIiIjLKRj5k9crb", "date_created": "2015-11-08T18:05:50+0300", "description": null, "currency": "EUR", "status": "Captured", "amount": 1099, "refund_amount": 0, "fee_amount": 34, "payee_email": null, "payee_phone": null, "refunded": false, "refunds": [], "installments_count": 0, "installments": [], "customer": { "description": null, "email": null, "date_created": "2015-11-05T12:38:04+0200", "full_name": "John Doe", "token": "cus_qxVtpVXe1VrHdcEzSqaz9KwW", "is_active": true, "date_modified": "2015-11-05T12:38:04+0200", "card": { "expiration_month": "08", "expiration_year": "2016", "last_four": "0003", "type": "Visa", "holder_name": "John Doe", "supports_installments": true, "max_installments": 3 } } }';
+    }
+    
     private function success_payment_installments_response()
     {
         return '{ "token": "pmt_DdEFKTO2lhRZjIpgMcJqj899", "date_created": "2015-10-05T17:37:41+0300", "description": null, "currency": "EUR", "status": "Captured", "amount": 10480, "refund_amount": 0, "fee_amount": 312, "payee_email": null, "payee_phone": null, "refunded": false, "refunds": [], "installments_count": 3, "installments": [
@@ -655,6 +711,26 @@ class PaymentTest extends TestCase
             { "token": "pmt_GMFBFJ2z7EVhtN7HgmbVag6k", "date_created": "2015-10-05T17:37:41+0300", "due_date": "2015-11-05T21:00:00+0200", "currency": "EUR", "status": "Pending installment", "amount": 3500, "fee_amount": 104 },
             { "token": "pmt_ynvYNpYn5mn9VARuwB4ZbVXY", "date_created": "2015-10-05T17:37:41+0300", "due_date": "2015-12-07T21:00:00+0200", "currency": "EUR", "status": "Pending installment", "amount": 3480, "fee_amount": 104}
             ], "card": { "expiration_month": "08", "expiration_year": "2016", "last_four": "0003", "type": "Visa", "holder_name": "John Doe", "supports_installments": true, "max_installments": 3 } }';
+    }
+    
+    private function success_payment_installments_response2()
+    {
+        return '{ "token": "pmt_DdEFKTO2lhRZjIpgMcJqj899", "date_created": "2015-10-05T17:37:41+0300", "description": null, "currency": "EUR", "status": "Captured", "amount": 1099, "refund_amount": 0, "fee_amount": 66, "payee_email": null, "payee_phone": null, "refunded": false, "refunds": [], "installments_count": 2, "installments": [
+            { "token": "pmt_VFDPv5oBSq3ulnlamgKFSSaM", "date_created": "2015-10-05T17:37:41+0300", "due_date": "2015-10-06T21:00:00+0300", "currency": "EUR", "status": "Pending installment", "amount": 549, "fee_amount": 33 },
+            { "token": "pmt_GMFBFJ2z7EVhtN7HgmbVag6k", "date_created": "2015-10-05T17:37:41+0300", "due_date": "2015-11-05T21:00:00+0200", "currency": "EUR", "status": "Pending installment", "amount": 550, "fee_amount": 33 },
+            ], "card": { "expiration_month": "08", "expiration_year": "2016", "last_four": "0003", "type": "Visa", "holder_name": "John Doe", "supports_installments": true, "max_installments": 12 } }';
+    }
+    
+    private function success_payment_installments_from_customer_token_response()
+    {
+        return '{ "token": "pmt_Xhwgo51I4k9Vee2fLPZhmqi8", "date_created": "2015-10-05T17:37:41+0300", "description": null, "currency": "EUR", "status": "Captured", "amount": 1099, "refund_amount": 0, "fee_amount": 66, "payee_email": null, "payee_phone": null, "refunded": false, "refunds": [], "installments_count": 2, "installments": [
+            { "token": "pmt_VFDPv5oBSq3ulnlamgKFSSaM", "date_created": "2015-10-05T17:37:41+0300", "due_date": "2015-10-06T21:00:00+0300", "currency": "EUR", "status": "Pending installment", "amount": 549, "fee_amount": 33 },
+            { "token": "pmt_GMFBFJ2z7EVhtN7HgmbVag6k", "date_created": "2015-10-05T17:37:41+0300", "due_date": "2015-11-05T21:00:00+0200", "currency": "EUR", "status": "Pending installment", "amount": 550, "fee_amount": 33 }
+            ], 
+                "customer": { "description": "Order #A-777", "email": null, "date_created": "2015-09-05T14:57:51+0200", "full_name": null, "token": "cus_CHXCbJNsijksZ34D7lFGL5p6", "is_active": true, "date_modified": "2015-09-05T14:58:10+0200", 
+                    "card": { "expiration_month": "08", "expiration_year": "2016", "last_four": "0003", "type": "Visa", "holder_name": "John Doe", "supports_installments": true, "max_installments": 12 }
+                }
+            }';
     }
 
     private function failed_payment_create_response()
