@@ -40,6 +40,55 @@ class PaymentTest extends TestCase
      * 
      * @group   ecommerce
      */
+    public function testPaymentCreateCustomer()
+    {
+        $this->mockResponse($this->success_payment_create_customer_response());
+        
+        $params = array(
+            'card_number'       => '4111111111111111',
+            'expiration_month'  => '01',
+            'expiration_year'   => date('Y') + 1,
+            'cvv'               => '123',
+            'holder_name'       => 'John Doe',
+            'amount'            => 100,
+            'create_customer'   => 1
+        );
+        $payment = Payment::create($params);
+
+        $this->assertPaymentProperties($payment);
+        $this->assertObjectHasAttribute('customer', $payment);
+        $this->assertObjectHasAttribute('card', $payment->customer);
+        
+        return $payment->customer;
+    }
+    
+    /**
+     * 
+     * @group   ecommerce
+     */
+    public function testPaymentCreateCustomerInvalidParam()
+    {
+        $this->mockResponse($this->failed_payment_create_response4());
+        
+        $params = array(
+            'card_number'       => '4111111111111111',
+            'expiration_month'  => '01',
+            'expiration_year'   => date('Y') + 1,
+            'cvv'               => '123',
+            'holder_name'       => 'John Doe',
+            'amount'            => 100,
+            'create_customer'   => 4
+        );
+        $response = Payment::create($params);
+
+        $this->assertObjectHasAttribute('error', $response);
+        $this->assertEquals($response->error->code, 40033);
+    }
+    
+    /**
+     * 
+     * @group   ecommerce
+     */
     public function testPaymentCreateFromCardToken()
     {
         $this->mockResponse($this->success_payment_create_response());
@@ -66,6 +115,44 @@ class PaymentTest extends TestCase
         $payment = Payment::create($params2);
 
         $this->assertPaymentProperties($payment);
+    }
+    
+    /**
+     * 
+     * @group   ecommerce
+     */
+    public function testPaymentCreateCustomerFromCardToken()
+    {
+        $this->mockResponse($this->success_payment_create_customer_response());
+        
+        $params = array(
+            'card_number'       => '4111111111111111',
+            'expiration_month'  => '01',
+            'expiration_year'   => date('Y') + 1,
+            'cvv'               => '123',
+            'holder_name'       => 'John Doe'
+        );
+        
+        if($this->isRemote()){
+            $token          = Token::create($params);
+            $token_string   = $token->token;
+        }else{
+            $token_string = 'cus_qxVtpVXe1VrHdcEzSqaz9KwW';
+        }
+        
+        $params2 = array(
+            'token'       => $token_string,
+            'create_customer' => 1,
+            'amount' => 1099
+        );
+        $payment = Payment::create($params2);
+
+        $this->assertPaymentProperties($payment);
+        $this->assertObjectHasAttribute('customer', $payment);
+        $this->assertObjectHasAttribute('card', $payment->customer);
+        $this->assertEquals($token_string, $payment->customer->token);
+        
+        return $payment->customer;
     }
     
     /**
@@ -164,6 +251,48 @@ class PaymentTest extends TestCase
         $payment = Payment::create($params2);
 
         $this->assertPaymentProperties($payment);
+    }
+    
+    /**
+     * @depends testPaymentCreateCustomer
+     * @group   ecommerce
+     */
+    public function testPaymentCreateFromCustomerCreatedAutomatically($customer)
+    {
+        $this->mockResponse($this->success_payment_create_customer_response());
+        
+        $params = array(
+            'token'       => $customer->token,
+            'amount'      => 1099
+        );
+        $payment = Payment::create($params);
+
+        $this->assertPaymentProperties($payment);
+        $this->assertObjectHasAttribute('customer', $payment);
+        $this->assertObjectHasAttribute('card', $payment->customer);
+        $this->assertEquals($customer->token, $payment->customer->token);
+        $this->assertEquals($params['amount'], $payment->amount);
+    }
+    
+    /**
+     * @depends testPaymentCreateCustomerFromCardToken
+     * @group   ecommerce
+     */
+    public function testPaymentCreateFromCustomerCreatedAutomatically2($customer)
+    {
+        $this->mockResponse($this->success_payment_create_customer_response());
+        
+        $params = array(
+            'token'       => $customer->token,
+            'amount'      => 1099
+        );
+        $payment = Payment::create($params);
+
+        $this->assertPaymentProperties($payment);
+        $this->assertObjectHasAttribute('customer', $payment);
+        $this->assertObjectHasAttribute('card', $payment->customer);
+        $this->assertEquals($customer->token, $payment->customer->token);
+        $this->assertEquals($params['amount'], $payment->amount);
     }
     
     /**
@@ -514,6 +643,11 @@ class PaymentTest extends TestCase
         return '{ "token": "pmt_guLEyWbxfj9zosdIeyUIWOWP", "date_created": "2015-07-08T18:05:50+0300", "description": null, "currency": "EUR", "status": "Captured", "amount": 100, "refund_amount": 0, "fee_amount": 22, "payee_email": null, "payee_phone": null, "refunded": false, "refunds": [], "installments_count": 0, "installments": [], "card": { "expiration_month": "01", "expiration_year": "2016", "last_four": "1111", "type": "Visa", "holder_name": "John Doe", "supports_installments": false, "max_installments": 0 } }';
     }
     
+    private function success_payment_create_customer_response()
+    {
+        return '{ "token": "pmt_8S6CdhqklLIiIjLKRj5k9crb", "date_created": "2015-11-08T18:05:50+0300", "description": null, "currency": "EUR", "status": "Captured", "amount": 1099, "refund_amount": 0, "fee_amount": 34, "payee_email": null, "payee_phone": null, "refunded": false, "refunds": [], "installments_count": 0, "installments": [], "customer": { "description": null, "email": null, "date_created": "2015-11-05T12:38:04+0200", "full_name": "John Doe", "token": "cus_qxVtpVXe1VrHdcEzSqaz9KwW", "is_active": true, "date_modified": "2015-11-05T12:38:04+0200", "card": { "expiration_month": "01", "expiration_year": "2016", "last_four": "1111", "type": "Visa", "holder_name": "John Doe", "supports_installments": false, "max_installments": 0 } } }';
+    }
+    
     private function success_payment_installments_response()
     {
         return '{ "token": "pmt_DdEFKTO2lhRZjIpgMcJqj899", "date_created": "2015-10-05T17:37:41+0300", "description": null, "currency": "EUR", "status": "Captured", "amount": 10480, "refund_amount": 0, "fee_amount": 312, "payee_email": null, "payee_phone": null, "refunded": false, "refunds": [], "installments_count": 3, "installments": [
@@ -536,6 +670,11 @@ class PaymentTest extends TestCase
     private function failed_payment_create_response3()
     {
         return '{ "error": { "status": 400, "code": 40002, "message": "The amount parameter is invalid. Min. 30 cents"} }';
+    }
+    
+    private function failed_payment_create_response4()
+    {
+        return '{ "error": { "status": 400, "code": 40033, "message": "Create customer option must be 0 or 1."} }';
     }
     
     private function success_payment_list_all_response()
