@@ -137,7 +137,7 @@ class PaymentTest extends TestCase
             $token          = Token::create($params);
             $token_string   = $token->token;
         }else{
-            $token_string = 'cus_qxVtpVXe1VrHdcEzSqaz9KwW';
+            $token_string = 'ctn_IWCqtxmrTrKgMNS72Wz1aFVy';
         }
         
         $params2 = array(
@@ -150,7 +150,7 @@ class PaymentTest extends TestCase
         $this->assertPaymentProperties($payment);
         $this->assertObjectHasAttribute('customer', $payment);
         $this->assertObjectHasAttribute('card', $payment->customer);
-        $this->assertEquals($token_string, $payment->customer->token);
+        $this->assertEquals($params2['amount'], $payment->amount);
         
         return $payment->customer;
     }
