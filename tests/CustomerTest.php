@@ -32,10 +32,10 @@ class CustomerTest extends TestCase
 
         $this->assertTrue($customer->is_active);
         $this->assertNotNull($customer->token);
-        
+
         return $customer;
     }
-    
+
     /**
      * @group   3dsecure
      */
@@ -51,7 +51,7 @@ class CustomerTest extends TestCase
 
         $this->mockResponse($this->failed_customer_create_response());
         $customer = Customer::create($params);
-        
+
         $this->assertObjectHasAttribute('error', $customer);
         $this->assertEquals($customer->error->code, 20016);
     }
@@ -68,7 +68,7 @@ class CustomerTest extends TestCase
             'cvv'               => '123',
             'holder_name'       => 'John Doe'
         );
-        
+
         if($this->isRemote()){
             $token = Token::create($params);
             $this->assertObjectHasAttribute('token', $token);
@@ -85,12 +85,12 @@ class CustomerTest extends TestCase
         );
         $this->mockResponse($this->success_customer_create_response2());
         $customer = Customer::create($params2);
-        
+
         $this->assertObjectHasAttribute('token', $customer, print_r($customer, true));
         $this->assertObjectHasAttribute('card', $customer);
         $this->assertEquals($customer->email, $params2['email']);
     }
-    
+
     /**
      * @group ecommerce
      */
@@ -98,20 +98,20 @@ class CustomerTest extends TestCase
     {
         $this->mockResponse($this->failed_customer_create_response2());
         $response = Customer::create(array());
-        
+
         $this->assertObjectHasAttribute('error', $response);
         $this->assertEquals($response->error->code, 20000);
     }
-    
+
     /**
      * @depends testCustomerCreate
      * @group   ecommerce
      */
-    public function testCustomerRetrieve($customer_exists)
+    public function testCustomerRetrieve($customer_existing)
     {
         //$token = 'cus_zDdjHBuNW3do8G3jaTqApzsI';
         $this->mockResponse($this->success_customer_retrieve_response());
-        $customer = Customer::retrieve($customer_exists->token);
+        $customer = Customer::retrieve($customer_existing->token);
 
         $this->assertTrue($customer->is_active);
         $this->assertNotNull($customer->token);
@@ -121,7 +121,7 @@ class CustomerTest extends TestCase
      * @depends testCustomerCreate
      * @group   ecommerce
      */
-    public function testCustomerUpdate($customer_exists)
+    public function testCustomerUpdate($customer_existing)
     {
         //$token = 'cus_zDdjHBuNW3do8G3jaTqApzsI';
         $this->mockResponse($this->success_customer_update_response());
@@ -129,7 +129,7 @@ class CustomerTest extends TestCase
             'email' => 'john_dow@example.com',
             'full_name' => 'John Doe'
         );
-        $customer = Customer::update($customer_exists->token, $params);
+        $customer = Customer::update($customer_existing->token, $params);
 
         $this->assertNotNull($customer->email);
         $this->assertNotNull($customer->full_name);
@@ -139,7 +139,7 @@ class CustomerTest extends TestCase
      * @depends testCustomerCreate
      * @group   ecommerce
      */
-    public function testCustomerUpdateFromCard($customer_exists)
+    public function testCustomerUpdateFromCard($customer_existing)
     {
         //$token = 'cus_FaWhNhFT5gEAAv5BArjJSIIq';
         $this->mockResponse($this->success_customer_update_card_response());
@@ -150,7 +150,7 @@ class CustomerTest extends TestCase
             'cvv'               => '123',
             'holder_name'       => 'John Doe'
         );
-        $customer = Customer::update($customer_exists->token, $params);
+        $customer = Customer::update($customer_existing->token, $params);
 
         $this->assertEquals(substr($params['card_number'], -4), $customer->card->last_four);
     }
@@ -159,7 +159,7 @@ class CustomerTest extends TestCase
      * @depends testCustomerCreate
      * @group   ecommerce
      */
-    public function testCustomerListAll($customer_exists)
+    public function testCustomerListAll($customer_existing)
     {
         //$token0 = 'cus_zDdjHBuNW3do8G3jaTqApzsI';
         $this->mockResponse($this->success_customer_listAll_response());
@@ -167,17 +167,17 @@ class CustomerTest extends TestCase
 
         $this->assertGreaterThan(0, count($customers->items));
     }
-    
+
     /**
      * @depends testCustomerCreate
      * @group   ecommerce
      */
-    public function testCustomerDelete($customer_exists)
+    public function testCustomerDelete($customer_existing)
     {
         //$token = 'cus_zDdjHBuNW3do8G3jaTqApzsI';
         $this->mockResponse($this->success_customer_delete_response());
 
-        $customer = Customer::delete($customer_exists->token);
+        $customer = Customer::delete($customer_existing->token);
 
         $this->assertNotNull($customer->token);
         $this->assertNotNull($customer->email);
@@ -188,7 +188,7 @@ class CustomerTest extends TestCase
     {
         return '{ "description": null, "email": null, "date_created": "2015-07-13T12:26:56+0300", "full_name": null, "token": "cus_zDdjHBuNW3do8G3jaTqApzsI", "is_active": true, "date_modified": "2015-07-13T12:26:56+0300", "card": { "expiration_month": "01", "expiration_year": "2016", "last_four": "1111", "type": "Visa", "holder_name": "John Doe" }}';
     }
-    
+
     private function success_customer_create_response2()
     {
         return '{ "description": null, "email": "smith@nowhere.com", "date_created": "2015-07-13T12:26:56+0300", "full_name": null, "token": "cus_zDdjHBuNW3do8G3jaTqApzsI", "is_active": true, "date_modified": "2015-07-13T12:26:56+0300", "card": { "expiration_month": "01", "expiration_year": "2016", "last_four": "1111", "type": "Visa", "holder_name": "John Doe" }}';
@@ -198,12 +198,12 @@ class CustomerTest extends TestCase
     {
         return '{ "error": { "status": 400, "code": 20016, "message": "Your account does not support tokenization."} }';
     }
-    
+
     private function failed_customer_create_response2()
     {
         return '{ "error": { "status": 400, "code": 20000, "message": "Invalid card number. Please try again or use another card."} }';
     }
-    
+
     private function success_customer_retrieve_response()
     {
         return '{ "description": null, "email": null, "date_created": "2015-07-13T12:26:56+0300", "full_name": null, "token": "cus_zDdjHBuNW3do8G3jaTqApzsI", "is_active": true, "date_modified": "2015-07-13T12:26:56+0300", "card": { "expiration_month": "01", "expiration_year": "2016", "last_four": "1111", "type": "Visa", "holder_name": "John Doe" } }';
