@@ -53,6 +53,7 @@ class PaymentNotificationTest extends TestCase
         $notification = PaymentNotification::retrieve($token);
 
         $this->assertNotificationProperties($notification);
+        $this->assertEquals($notification->token, $token);
     }
 
     /**
