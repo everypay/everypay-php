@@ -50,6 +50,16 @@ class Customer extends AbstractResource
      * - email:       Customer email. [Optional]
      * - full_name:   Customer full name. [Optional]
      *
+     * Following parameters can be used in case of adding a new card for customer
+     * or updating the default one.
+     * - token: The CardToken that holds credit card information.
+     * - card: The token of a Card object.
+     * - default_card: Whether the above tokens will be set as default card
+     *                  for customer. Set this value to 1 to set as default card.
+     *
+     * You can also add a new card to customer by sending the same card info
+     * you send when creating a customer.
+     *
      * @param string|stdClass $token A valid customer token returned from a
      *                               successful customer creation.
      * @param array $params
