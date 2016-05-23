@@ -81,43 +81,40 @@ First fill in your API keys in file fixtures.ini (please provide your sandbox-ac
 
 Then, in root folder run one of the following available commands.
 
-<ul>
-<li>command-1 makes real API requests and applies to a 3D Secure account type.
-</li>
-<li>command-2 makes real API requests and applies to an eCommerce account type.
-</li>
-<li>command-3 just performs local tests that do not make any real calls anywhere.
-</li>
-</ul>
+* command-1 makes real API requests and applies to a 3D Secure account type.
 
-```php
-<?php
+* command-2 makes real API requests and applies to an eCommerce account type.
 
-//command-1: testing with real requests to API 3D-Secure account
+* command-3 just performs local tests that do not make any real calls anywhere.
+
+```bash
+
+#command-1: testing with real requests to API 3D-Secure account
 phpunit --configuration ./phpunit_remote.xml --group 3dsecure
 
-//command-2: testing with real requests to API eCommerce account
+#command-2: testing with real requests to API eCommerce account
 phpunit --configuration ./phpunit_remote.xml --group ecommerce
 
-//command-3: testing locally with mocks (default)
+#command-3: testing locally with mocks (default)
 phpunit --configuration ./phpunit_local.xml
 ```
 
 You may provide a specific test file at the end of each command (eg tests/PaymentTests.php) or else all tests will be performed (default).
 
-<b>Note 1:</b> if you try to run one of the "live" API commands (1 or 2) that does not respond to your exact account type (3D-Secure or eCommerce) then that tests may fail or be skipped.
+**Note 1:** if you try to run one of the "live" API commands (1 or 2) that does not respond to your exact account type (3D-Secure or eCommerce) then that tests may fail or be skipped.
 
-<b>Note 2:</b> if you do not have phpunit installed in your system, you may use composer to install it (provided you have already installed composer itself).
-```shell
-//in everypay-php root folder
+**Note 2:** if you do not have phpunit installed in your system, you may use composer to install it (provided you have already installed composer itself).
+
+```bash
+#in everypay-php root folder
 composer update
 ```
 
-<b>Note 3:</b> as regards the "live" API requests (commands 1 and 2) make sure that in every test file, inside <b>public function setUp</b>, you safely provide the following command (already provided  by default) in order for the calls to be redirected to your appropriate sandbox account rather than the real account.
+**Note 3:** as regards the "live" API requests (commands 1 and 2) make sure that in every test file, inside **public function setUp**, you safely provide the following command (already provided  by default) in order for the calls to be redirected to your appropriate sandbox account rather than the real account.
 
 ```php
 <?php
 Everypay::$isTest = true;
 ```
 
-<b>Attention:</b> not providing this command <b>along with</b> filling a real API key rather than  the sandbox API key, will make your remote test calls (see commands 1 and 2 above) to be directed to your real account and therefore may result in real charges!
+**Attention:** not providing this command **along with** filling a real API key rather than  the sandbox API key, will make your remote test calls (see commands 1 and 2 above) to be directed to your real account and therefore may result in real charges!
