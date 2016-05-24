@@ -77,8 +77,8 @@ class Customer extends AbstractResource
      *                               successful customer creation.
      * @return stdClass
      */
-    public static function delete($token)
+    public static function delete($token, array $params = array())
     {
-        return parent::delete($token);
+        return parent::delete($token, $params);
     }
 }

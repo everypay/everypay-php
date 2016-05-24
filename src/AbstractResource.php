@@ -57,6 +57,7 @@ abstract class AbstractResource
     public static function retrieve($token)
     {
         $params = array('token_id' => $token);
+
         return self::invoke(__FUNCTION__, static::RESOURCE_NAME, $params);
     }
 
@@ -88,6 +89,7 @@ abstract class AbstractResource
     public static function update($token, array $params)
     {
         $params['token_id'] = $token;
+
         return self::invoke(__FUNCTION__, static::RESOURCE_NAME, $params);
     }
 
@@ -97,9 +99,10 @@ abstract class AbstractResource
      * @param string|stdClass $token
      * @return stdClass
      */
-    public static function delete($token)
+    public static function delete($token, array $params = array())
     {
-        $params = array('token_id' => $token);
+        $params = array_merge($params, array('token_id' => $token));
+
         return self::invoke(__FUNCTION__, static::RESOURCE_NAME, $params);
     }
 

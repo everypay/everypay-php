@@ -68,7 +68,7 @@ class Token extends AbstractResource
      *
      * @throws Everypay\Exception\RuntimeException
      */
-    public static function delete($token)
+    public static function delete($token, array $params = array())
     {
         throw new Exception\RuntimeException(
             'Resource ' . ucfirst(static::RESOURCE_NAME) .

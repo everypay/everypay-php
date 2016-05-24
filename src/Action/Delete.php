@@ -17,4 +17,17 @@ class Delete extends AbstractAction
     {
         return $this->createRequest($this->method);
     }
+
+    protected function getResourceUri()
+    {
+        $uri = parent::getResourceUri();
+
+        if (isset($this->params['card'])) {
+            return $uri
+                . '/card/'
+                . $this->params['card'];
+        }
+
+        return $uri;
+    }
 }
