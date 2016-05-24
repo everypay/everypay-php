@@ -113,6 +113,11 @@ abstract class AbstractResource
         self::$client = $client;
     }
 
+    public static function resetClient()
+    {
+        self::$client = null;
+    }
+
     protected static function invoke($action, $resourceName, array $params = array())
     {
         if (!in_array($action, self::$actions)) {
@@ -132,7 +137,8 @@ abstract class AbstractResource
         $options = array_merge($params, $options);
         $actionClass = 'Everypay\\Action\\' . (ucwords($action));
         $actionInstance = new $actionClass($options);
-        $request = $actionInstance->__invoke();
+        $request = $actionInstance();
+
         return self::handleResponse(self::createClient()->send($request));
     }
 
@@ -154,25 +160,35 @@ abstract class AbstractResource
      */
     protected static function handleResponse($response)
     {
+        self::resolveContentType($response);
+
+        $body = $response->getBody();
+        $response = json_decode($body);
+
+        self::resolveErrorResponse($response);
+
+        return $response;
+    }
+
+    private static function resolveContentType($response)
+    {
         $contentType = $response->getHeaderLine('Content-Type');
         if (stripos($contentType, 'application/json') === false) {
             throw new Exception\CurlException(
                 'The returned response is not in json format'
             );
         }
+    }
 
-        $body = $response->getBody();
-        $response = json_decode($body);
-
-        if (isset($response->error->code)) {
-            if (EveryPay::throwExceptions()) {
-                throw new ApiErrorException(
-                    $response->error->message,
-                    $response->error->code
-                );
-            }
+    private static function resolveErrorResponse($response)
+    {
+        if (isset($response->error->code)
+            && EveryPay::throwExceptions()
+        ) {
+            throw new ApiErrorException(
+                $response->error->message,
+                $response->error->code
+            );
         }
-
-        return $response;
     }
 }

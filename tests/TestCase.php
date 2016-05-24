@@ -28,8 +28,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
             array('send')
         );
 
-        $client->expects($this->once())
-            ->method('send')
+        $client->method('send')
             ->will($this->returnValue($response));
 
         AbstractResource::setClient($client);

@@ -27,7 +27,7 @@ class CustomerTest extends TestCase
             'holder_name'       => 'John Doe'
         );
 
-        $this->mockResponse($this->success_customer_create_response());
+        #$this->mockResponse($this->successCustomerCreateResponse());
         $customer = Customer::create($params);
 
         $this->assertTrue($customer->is_active);
@@ -160,37 +160,58 @@ class CustomerTest extends TestCase
         $this->assertFalse($customer->is_active);
     }
 
-    public function testAddCustomerCardFromCardToken()
+    /**
+     * @depends testCustomerCreate
+     * @group   ecommerce
+     */
+    public function testAddCustomerCardFromCardToken($customer)
     {
-        $this->mockResponse($this->successCustomerAddCardFromCardTokenResponse());
-        $customerToken = 'cus_BPlnZQ7Ok5ec5TR7d9DueyYL';
+        $customerToken = $customer->token;
+        $cardToken = $this->createCardToken();
         $data = array(
-            'token' => 'ctn_tTA6hocpLwObpHSbpPi9adoz',
+            'token' => $cardToken->token,
         );
+        $this->mockResponse($this->successCustomerAddCardFromCardTokenResponse());
         $customer = Customer::update($customerToken, $data);
 
         $this->assertTrue($customer->cards->count > 1);
+        $this->assertTrue(isset($customer->cvv_required));
+
+        return $customer;
     }
 
-    public function testSetCustomerDefaultCardFromTokenOfCard()
+    /**
+     * @depends testAddCustomerCardFromCardToken
+     * @group   ecommerce
+     */
+    public function testSetCustomerDefaultCardFromTokenOfCard($customer)
     {
         $this->mockResponse($this->successSetCustomerDefaultCardFromTokenOfCardResponse());
-        $customerToken = 'cus_BPlnZQ7Ok5ec5TR7d9DueyYL';
+        $customerToken = $customer->token;
+
+        $noDefaultCard = $this->getNoDefaultCard($customer);
+        $this->assertNotFalse($noDefaultCard);
+
         $data = array(
-            'card' => 'crd_cuvYshB7mWon47WradKpQoo6',
+            'card' => $noDefaultCard->token,
             'default_card' => 1,
         );
         $customer = Customer::update($customerToken, $data);
 
         $this->assertEquals($data['card'], $customer->card->token);
+        $this->assertTrue(isset($customer->cvv_required));
     }
 
-    public function testAddDefaultCustomerCardFromCardDetails()
+    /**
+     * @depends testCustomerCreate
+     * @group   ecommerce
+     */
+    public function testAddDefaultCustomerCardFromCardDetails($customer)
     {
         $this->mockResponse($this->successAddDefaultCustomerCardFromCardDetailsResponse());
-        $customerToken = 'cus_BPlnZQ7Ok5ec5TR7d9DueyYL';
+        $customerToken = $customer->token;
         $params = array(
-            'card_number'       => '4908440000000003',
+            'card_number'       => '5309707106499343',
             'expiration_month'  => '01',
             'expiration_year'   => date('Y') + 1,
             'cvv'               => '123',
@@ -201,11 +222,45 @@ class CustomerTest extends TestCase
         $customer = Customer::update($customerToken, $params);
 
         $this->assertEquals(substr($params['card_number'], -4), $customer->card->last_four);
+        $this->assertTrue(isset($customer->cvv_required));
     }
 
-    private function success_customer_create_response()
+    private function createCardToken()
     {
-        return '{ "description": null, "email": null, "date_created": "2015-07-13T12:26:56+0300", "full_name": null, "token": "cus_zDdjHBuNW3do8G3jaTqApzsI", "is_active": true, "date_modified": "2015-07-13T12:26:56+0300", "card": { "expiration_month": "01", "expiration_year": "2016", "last_four": "1111", "type": "Visa", "holder_name": "John Doe" }}';
+        $this->mockResponse($this->successCreateTokenResponse());
+
+        $params = array(
+            'card_number'       => '4908440000000003',
+            'expiration_month'  => '01',
+            'expiration_year'   => date('Y') + 1,
+            'cvv'               => '123',
+            'holder_name'       => 'John Doe',
+        );
+
+        $response = Token::create($params);
+
+        return $response;
+    }
+
+    private function getNoDefaultCard($customer)
+    {
+        $defaultCard = $customer->card;
+
+        $noDefault = array_filter($customer->cards->data, function ($c) use ($defaultCard) {
+            return $c->token !== $defaultCard->token;
+        });
+
+        return reset($noDefault);
+    }
+
+    private function successCreateTokenResponse()
+    {
+        return '{ "token": "ctn_QwGjqyMdRnHZgsNpBW0UbR14", "is_used": false, "has_expired": false, "amount": 0, "date_created": "2016-05-24T13:12:58+0300", "card": { "token": "crd_yQt4R8uYSBqErIY02fRLpdpP", "expiration_month": "01", "expiration_year": "2017", "last_four": "0003", "type": "Visa", "holder_name": "John Doe", "supports_installments": true, "max_installments": 12, "status": "valid", "friendly_name": "Visa •••• 0003 (01\/2017)", "cvv_required": false } }';
+    }
+
+    private function successCustomerCreateResponse()
+    {
+        return '{ "description": null, "email": null, "date_created": "2016-05-24T13:07:30+0300", "full_name": null, "token": "cus_ezNQMOQnvvj2LnsPLD17WwZr", "is_active": true, "date_modified": "2016-05-24T13:07:30+0300", "cvv_required": false, "card": { "token": "crd_J7j7VMnHegcLQoHacGYm3Uyy", "expiration_month": "01", "expiration_year": "2017", "last_four": "1111", "type": "Visa", "holder_name": "John Doe", "supports_installments": true, "max_installments": 12, "status": "valid", "friendly_name": "Visa •••• 1111 (01\/2017)", "cvv_required": false }, "cards": { "count": 1, "data": [ { "token": "crd_J7j7VMnHegcLQoHacGYm3Uyy", "expiration_month": "01", "expiration_year": "2017", "last_four": "1111", "type": "Visa", "holder_name": "John Doe", "supports_installments": true, "max_installments": 12, "status": "valid", "friendly_name": "Visa •••• 1111 (01\/2017)", "cvv_required": false } ] } }';
     }
 
     private function success_customer_create_response2()
@@ -255,6 +310,6 @@ class CustomerTest extends TestCase
 
     private function successAddDefaultCustomerCardFromCardDetailsResponse()
     {
-        return '{ "description": "Customer", "email": "john@example.com", "date_created": "2016-05-17T10:05:29+0300", "full_name": "John Dow", "token": "cus_BPlnZQ7Ok5ec5TR7d9DueyYL", "is_active": true, "date_modified": "2016-05-23T17:33:16+0300", "cvv_required": false, "card": { "token": "crd_eZ96pwkl7eBFuIPC7trV2vid", "expiration_month": "01", "expiration_year": "2017", "last_four": "0003", "type": "Visa", "holder_name": "John Doe", "supports_installments": false, "max_installments": 0, "status": "valid", "friendly_name": "Visa •••• 0003 (01\/2017)", "cvv_required": false }, "cards": { "count": 3, "data": [ { "token": "crd_cuvYshB7mWon47WradKpQoo6", "expiration_month": "01", "expiration_year": "2017", "last_four": "8889", "type": "MasterCard", "holder_name": "TEST", "supports_installments": false, "max_installments": 0, "status": "valid", "friendly_name": "MasterCard •••• 8889 (01\/2017)", "cvv_required": false }, { "token": "crd_7j93agQ3zMGlPp83StF9NkxY", "expiration_month": "01", "expiration_year": "2017", "last_four": "1111", "type": "Visa", "holder_name": "John Doe", "supports_installments": true, "max_installments": 12, "status": "valid", "friendly_name": "Visa •••• 1111 (01\/2017)", "cvv_required": false }, { "token": "crd_eZ96pwkl7eBFuIPC7trV2vid", "expiration_month": "01", "expiration_year": "2017", "last_four": "0003", "type": "Visa", "holder_name": "John Doe", "supports_installments": false, "max_installments": 0, "status": "valid", "friendly_name": "Visa •••• 0003 (01\/2017)", "cvv_required": false } ] } }';
+        return '{ "description": null, "email": null, "date_created": "2016-05-24T13:12:58+0300", "full_name": null, "token": "cus_tg75mrhkyb1pa7tvBnVPygg8", "is_active": true, "date_modified": "2016-05-24T13:12:59+0300", "cvv_required": false, "card": { "token": "crd_A0wUY2HO9EinoqD88qqP4Af3", "expiration_month": "01", "expiration_year": "2017", "last_four": "9343", "type": "MasterCard", "holder_name": "John Doe", "supports_installments": false, "max_installments": 0, "status": "valid", "friendly_name": "MasterCard •••• 9343 (01\/2017)", "cvv_required": false }, "cards": { "count": 3, "data": [ { "token": "crd_lAkLrZSEdY6hMTHt0GH4oYeR", "expiration_month": "01", "expiration_year": "2017", "last_four": "0003", "type": "Visa", "holder_name": "John Doe", "supports_installments": true, "max_installments": 12, "status": "valid", "friendly_name": "Visa •••• 0003 (01\/2017)", "cvv_required": false }, { "token": "crd_6uvEwNPu14QYkZ5SDsIqVQAH", "expiration_month": "01", "expiration_year": "2017", "last_four": "1111", "type": "Visa", "holder_name": "John Doe", "supports_installments": true, "max_installments": 12, "status": "valid", "friendly_name": "Visa •••• 1111 (01\/2017)", "cvv_required": false }, { "token": "crd_A0wUY2HO9EinoqD88qqP4Af3", "expiration_month": "01", "expiration_year": "2017", "last_four": "9343", "type": "MasterCard", "holder_name": "John Doe", "supports_installments": false, "max_installments": 0, "status": "valid", "friendly_name": "MasterCard •••• 9343 (01\/2017)", "cvv_required": false } ] } }';
     }
 }
