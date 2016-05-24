@@ -7,6 +7,7 @@ namespace Everypay;
 
 use Everypay\Http\Client\CurlClient;
 use Everypay\Http\Client\ClientInterface;
+use Everypay\Exception\ApiErrorException;
 
 /**
  * Common methods for all API resources.
@@ -115,11 +116,11 @@ abstract class AbstractResource
     protected static function invoke($action, $resourceName, array $params = array())
     {
         if (!in_array($action, self::$actions)) {
-            throw new Exception\InvalidArgumentException(sprintf("Action %s is not exists", $action));
+            throw new Exception\InvalidArgumentException(sprintf("Action `%s` does not exists", $action));
         }
 
         if (!in_array($resourceName, self::$resources)) {
-            throw new Exception\InvalidArgumentException(sprintf("Resource %s is not exists", $resourceName));
+            throw new Exception\InvalidArgumentException(sprintf("Resource `%s` does not exists", $resourceName));
         }
 
         $options = array(
@@ -165,7 +166,7 @@ abstract class AbstractResource
 
         if (isset($response->error->code)) {
             if (EveryPay::throwExceptions()) {
-                throw new Everypay_Exception_ApiErrorException(
+                throw new ApiErrorException(
                     $response->error->message,
                     $response->error->code
                 );

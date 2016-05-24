@@ -69,6 +69,28 @@ class PaymentNotificationTest extends TestCase
         $this->assertGreaterThan(0, count($notifications->items));
     }
 
+    /**
+     * @expectedException         Everypay\Exception\RuntimeException
+     * @expectedExceptionMessage  Resource Notifications does not support method Everypay\PaymentNotification::delete
+     * @group   ecommerce
+     * @group   3dsecure
+     */
+    public function testCannotUseDeleteAction()
+    {
+        $response = PaymentNotification::delete('');
+    }
+
+    /**
+     * @expectedException         Everypay\Exception\RuntimeException
+     * @expectedExceptionMessage  Resource Notifications does not support method Everypay\PaymentNotification::update
+     * @group   ecommerce
+     * @group   3dsecure
+     */
+    public function testCannotUseUpdateAction()
+    {
+        $response = PaymentNotification::update('', array());
+    }
+
     private function assertNotificationProperties($notification)
     {
         $this->assertObjectHasAttribute('token', $notification);

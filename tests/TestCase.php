@@ -9,16 +9,16 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     public function getFixtures()
     {
         $ini = parse_ini_file("fixtures.ini", true);
+
         return new \ArrayIterator($ini);
     }
 
     protected function mockResponse($answer, $contentType = 'application/json')
     {
-
-        if($this->isRemote()){
+        if ($this->isRemote()) {
             return;
         }
-        
+
         $response = new Http\Response();
         $response = $response->withHeader('Content-Type', $contentType)
             ->withBody($answer);
@@ -34,11 +34,12 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 
         AbstractResource::setClient($client);
     }
-    
-    protected function isRemote(){
-        if(TEST_ENV == 'REMOTE'){
+
+    protected function isRemote()
+    {
+        if (TEST_ENV == 'REMOTE') {
             return 1;
-        }else if(TEST_ENV == 'LOCAL'){
+        } elseif (TEST_ENV == 'LOCAL') {
             return 0;
         }
     }
