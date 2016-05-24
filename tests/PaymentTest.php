@@ -347,29 +347,6 @@ class PaymentTest extends TestCase
     }
 
     /**
-     * @depends testPaymentCreateFromCardToken
-     * @group   ecommerce
-     */
-    //FIXME
-    /*public function testPaymentInstallmentsFromCardToken($token_string)
-    {
-        $this->mockResponse($this->success_payment_installments_response2());
-
-        $params = array(
-            'token'             => $token_string,
-            'amount'            => 1099,
-            'installments'      => 2
-        );
-        $payment = Payment::create($params);
-
-        $this->assertPaymentProperties($payment);
-        $this->assertEquals($payment->installments_count, 2);
-        $this->assertEquals(count($payment->installments), 2);
-        $this->assertEquals($params['amount'], $payment->installments[0]->amount
-                + $payment->installments[1]->amount);
-    }*/
-
-    /**
      * This is not allowed from this environment (curl request) for 3D-Secure
      * account.
      *
@@ -711,14 +688,6 @@ class PaymentTest extends TestCase
             { "token": "pmt_GMFBFJ2z7EVhtN7HgmbVag6k", "date_created": "2015-10-05T17:37:41+0300", "due_date": "2015-11-05T21:00:00+0200", "currency": "EUR", "status": "Pending installment", "amount": 3500, "fee_amount": 104 },
             { "token": "pmt_ynvYNpYn5mn9VARuwB4ZbVXY", "date_created": "2015-10-05T17:37:41+0300", "due_date": "2015-12-07T21:00:00+0200", "currency": "EUR", "status": "Pending installment", "amount": 3480, "fee_amount": 104}
             ], "card": { "expiration_month": "08", "expiration_year": "2016", "last_four": "0003", "type": "Visa", "holder_name": "John Doe", "supports_installments": true, "max_installments": 3 } }';
-    }
-
-    private function success_payment_installments_response2()
-    {
-        return '{ "token": "pmt_DdEFKTO2lhRZjIpgMcJqj899", "date_created": "2015-10-05T17:37:41+0300", "description": null, "currency": "EUR", "status": "Captured", "amount": 1099, "refund_amount": 0, "fee_amount": 66, "payee_email": null, "payee_phone": null, "refunded": false, "refunds": [], "installments_count": 2, "installments": [
-            { "token": "pmt_VFDPv5oBSq3ulnlamgKFSSaM", "date_created": "2015-10-05T17:37:41+0300", "due_date": "2015-10-06T21:00:00+0300", "currency": "EUR", "status": "Pending installment", "amount": 549, "fee_amount": 33 },
-            { "token": "pmt_GMFBFJ2z7EVhtN7HgmbVag6k", "date_created": "2015-10-05T17:37:41+0300", "due_date": "2015-11-05T21:00:00+0200", "currency": "EUR", "status": "Pending installment", "amount": 550, "fee_amount": 33 },
-            ], "card": { "expiration_month": "08", "expiration_year": "2016", "last_four": "0003", "type": "Visa", "holder_name": "John Doe", "supports_installments": true, "max_installments": 12 } }';
     }
 
     private function success_payment_installments_from_customer_token_response()

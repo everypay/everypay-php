@@ -13,7 +13,6 @@ class PaymentNotificationTest extends TestCase
         $credentials = $this->getFixtures()->offsetGet('everypay');
         Everypay::setApiKey($credentials['secret_key']);
         Everypay::$isTest = true;
-        AbstractResource::setClientOption(CurlClient::SSL_VERIFY_PEER, 0);
     }
 
     /**

@@ -10,8 +10,7 @@ class CustomerTest extends TestCase
     {
         $credentials = $this->getFixtures()->offsetGet('everypay');
         Everypay::setApiKey($credentials['secret_key']);
-        Customer::setClientOption(Http\Client\CurlClient::SSL_VERIFY_PEER, 0);
-        Everypay::$isTest = false;
+        Everypay::$isTest = true;
     }
 
     /**

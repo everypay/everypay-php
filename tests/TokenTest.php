@@ -14,7 +14,6 @@ class TokenTest extends TestCase
     }
 
     /**
-     * 
      * @group   ecommerce
      */
     public function testTokenCreate()
@@ -32,14 +31,14 @@ class TokenTest extends TestCase
         $this->assertObjectHasAttribute('token', $token);
         $this->assertFalse($token->is_used);
         $this->assertFalse($token->has_expired);
-        
+
         return $token;
     }
-    
+
     /**
      * This is not generally forbidden for 3D-Secure account,
      * just not allowed from this environment (curl request) for 3D-Secure account.
-     * 
+     *
      * @group   3dsecure
      */
     public function testTokenCreateNotAllowed()
@@ -59,7 +58,7 @@ class TokenTest extends TestCase
     }
 
     /**
-     * 
+     *
      * @depends testTokenCreate
      * @group   ecommerce
      */
@@ -113,7 +112,7 @@ class TokenTest extends TestCase
     }
 
     /**
-     * 
+     *
      * @group   ecommerce
      */
     public function testTokenCreateWithInvalidExpirationYear()
@@ -127,13 +126,13 @@ class TokenTest extends TestCase
         );
         $this->mockResponse($this->failed_token_create_response_exp_year());
         $response = Token::create($params);
-        
+
         $this->assertObjectHasAttribute('error', $response);
         $this->assertEquals($response->error->code, 20001);
     }
-    
+
     /**
-     * 
+     *
      * @group   ecommerce
      */
     public function testTokenCreateWithExpiredCard()
@@ -147,13 +146,13 @@ class TokenTest extends TestCase
         );
         $this->mockResponse($this->failed_token_create_response_exp_year());
         $response = Token::create($params);
-        
+
         $this->assertObjectHasAttribute('error', $response);
         $this->assertEquals($response->error->code, 20001);
     }
-    
+
     /**
-     * 
+     *
      * @group   ecommerce
      */
     public function testTokenCreateWithInvalidExpirationMonth()
@@ -171,9 +170,9 @@ class TokenTest extends TestCase
         $this->assertObjectHasAttribute('error', $response);
         $this->assertEquals($response->error->code, 20002);
     }
-    
+
     /**
-     * 
+     *
      * @group   ecommerce
      */
     public function testTokenCreateWithInvalidCvv()
@@ -191,9 +190,9 @@ class TokenTest extends TestCase
         $this->assertObjectHasAttribute('error', $response);
         $this->assertEquals($response->error->code, 20003);
     }
-    
+
     /**
-     * 
+     *
      * @group   ecommerce
      */
     public function testTokenRetrieveInvalidToken()
@@ -214,17 +213,17 @@ class TokenTest extends TestCase
     {
         return '{ "token": "ctn_oLyYPaymB2AozoABZYYHnb3g", "is_used": false, "has_expired": false, "amount": 0, "date_created": "2015-07-08T15:54:50+0300", "card": { "expiration_month": "01", "expiration_year": "2016", "last_four": "1111", "type": "Visa", "holder_name": "John Doe" } }';
     }
-    
+
     private function failed_token_create_response_exp_year()
     {
         return '{ "error": { "status": 400, "code": 20001, "message": "Expiration year in the past or invalid."} }';
     }
-    
+
     private function failed_token_create_response_exp_month()
     {
         return '{ "error": { "status": 400, "code": 20002, "message": "Expiration month in the past or invalid."} }';
     }
-    
+
     private function failed_token_create_response_invalid_token()
     {
         return '{ "error": { "status": 400, "code": 20005, "message": "Could not find requested card token."} }';
@@ -234,7 +233,7 @@ class TokenTest extends TestCase
     {
         return '{ "error": { "status": 400, "code": 20003, "message": "Provide a valid (3 digit) CVV code."} }';
     }
-    
+
     private function failed_token_create_response()
     {
         return '{ "error": { "status": 400, "code": 20013, "message": "Your account does not support tokenization."} }';
