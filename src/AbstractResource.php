@@ -30,7 +30,8 @@ abstract class AbstractResource
         'tokens',
         'payments',
         'customers',
-        'notifications'
+        'notifications',
+        'schedules',
     );
 
     private static $clientOptions = array();
@@ -149,6 +150,7 @@ abstract class AbstractResource
     {
         $client = self::$client ?: new CurlClient(self::$clientOptions);
         $client->setOption(CurlClient::TIMEOUT, 30);
+        $client->setOption(CurlClient::SSL_VERIFY_PEER, 0);
         $client->setOption(CurlClient::USER_AGENT, 'EveryPay PHP Library ' . Everypay::VERSION);
 
         return $client;
