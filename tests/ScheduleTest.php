@@ -20,10 +20,14 @@ class ScheduleTest extends TestCase
 
         $this->mockResponse($this->successScheduleCreateResponse());
 
+        $date1 = new DateTime();
+        $date2 = new DateTime();
+        $date3 = new DateTime();
+
         $dates = array(
-            (new DateTime())->modify('1 week')->format('c'),
-            (new DateTime())->modify('1 month')->format('c'),
-            (new DateTime())->modify('2 month')->format('c'),
+            $date1->modify('1 week')->format('c'),
+            $date2->modify('1 month')->format('c'),
+            $date3->modify('2 month')->format('c'),
         );
         $params = array(
             'card_number'       => '4111111111111111',
