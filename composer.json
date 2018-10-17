@@ -2,17 +2,22 @@
     "name": "everypay/everypay-php",
     "type": "library",
     "description": "",
-    "keywords": ["payment", "provider", "payment processing", "api"],
+    "keywords": [
+        "payment",
+        "provider",
+        "payment processing",
+        "api"
+    ],
     "license": "MIT",
     "homepage": "https://www.everypay.gr",
     "authors": [
-    {
-        "name": "EveryPay Payment Processing Gateway",
-        "homepage": "https://www.everypay.gr"
-    }
+        {
+            "name": "EveryPay Payment Processing Gateway",
+            "homepage": "https://www.everypay.gr"
+        }
     ],
     "require": {
-        "php": ">=5.3.3",
+        "php": ">=5.5.19",
         "ext-curl": "*",
         "ext-json": "*"
     },

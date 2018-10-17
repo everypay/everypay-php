@@ -19,6 +19,7 @@ class CurlClient implements ClientInterface
     const TIMEOUT           = CURLOPT_TIMEOUT;
     const SSL_VERIFY_PEER   = CURLOPT_SSL_VERIFYPEER;
     const SSL_VERIFY_HOST   = CURLOPT_SSL_VERIFYHOST;
+    const SSL_VERSION       = CURLOPT_SSLVERSION;
     const USER_AGENT        = CURLOPT_USERAGENT;
 
     private $options = array(
