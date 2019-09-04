@@ -38,7 +38,7 @@ abstract class AbstractAction
         return $this->apiUri
             . '/'
             . $this->resource
-            . ($this->tokenId ? '/'.$this->tokenId : null);
+            . ($this->tokenId ? '/' . $this->tokenId : null);
     }
 
     /**

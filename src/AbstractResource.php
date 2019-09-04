@@ -23,7 +23,10 @@ abstract class AbstractResource
         'listAll',
         'refund',
         'update',
-        'delete'
+        'delete',
+        'balance',
+        'payment',
+        'direct'
     );
 
     private static $resources = array(
@@ -31,7 +34,11 @@ abstract class AbstractResource
         'payments',
         'customers',
         'notifications',
-        'schedules',
+        'sellers',
+        'transfers',
+        'reversals',
+        'payouts',
+        'balance'
     );
 
     private static $clientOptions = array();
