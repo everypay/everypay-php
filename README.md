@@ -1,4 +1,4 @@
-# Everypay php library
+# EveryPay PHP library
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/everypay/everypay-php/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/everypay/everypay-php/?branch=master) [![Build Status](https://travis-ci.org/everypay/everypay-php.svg)](https://travis-ci.org/everypay/everypay-php?branch=master) [![Coverage Status](https://coveralls.io/repos/everypay/everypay-php/badge.svg?branch=master&service=github)](https://coveralls.io/github/everypay/everypay-php?branch=master) [![Latest Stable Version](https://poser.pugx.org/everypay/everypay-php/v/stable)](https://packagist.org/packages/everypay/everypay-php) [![License](https://poser.pugx.org/everypay/everypay-php/license)](https://packagist.org/packages/everypay/everypay-php)
 ## Installation
 
@@ -8,7 +8,7 @@ Include `autoload.php` file in your application.
 require_once '/path/to/everypay-php/autoload.php';
 ```
 
-## Installation with composer
+## Installation with Composer
 You can install this library using [Composer](http://getcomposer.org)
 
 Information about how to install composer you can find [here](https://getcomposer.org/doc/00-intro.md) 
