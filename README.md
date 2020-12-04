@@ -6,6 +6,8 @@
 
 **You cannot gather card data unless you are [PCI DSS SAQ D Certification](https://www.pcisecuritystandards.org/documents/SAQ_D_v3_Merchant.pdf)**
 
+**Check our [docs](https://docs.everypay.gr/) for more information**
+
 ## Installation
 
 Include `autoload.php` file in your application.
