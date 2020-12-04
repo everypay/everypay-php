@@ -1,5 +1,11 @@
 # EveryPay PHP library
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/everypay/everypay-php/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/everypay/everypay-php/?branch=master) [![Build Status](https://travis-ci.org/everypay/everypay-php.svg)](https://travis-ci.org/everypay/everypay-php?branch=master) [![Coverage Status](https://coveralls.io/repos/everypay/everypay-php/badge.svg?branch=master&service=github)](https://coveralls.io/github/everypay/everypay-php?branch=master) [![Latest Stable Version](https://poser.pugx.org/everypay/everypay-php/v/stable)](https://packagist.org/packages/everypay/everypay-php) [![License](https://poser.pugx.org/everypay/everypay-php/license)](https://packagist.org/packages/everypay/everypay-php)
+
+# ATTENTION
+**You must be using this plugin together with our [iFrame](https://docs.everypay.gr/accept-payments/payform/).**
+
+**You cannot gather card data unless you are [PCI DSS SAQ D Certification](https://www.pcisecuritystandards.org/documents/SAQ_D_v3_Merchant.pdf)**
+
 ## Installation
 
 Include `autoload.php` file in your application.
@@ -58,6 +64,11 @@ Everypay::setApiKey('sk_YoUraPikEy');
  */
 Everypay::$isTest = true;
 
+/**
+ * You can only handle card information if you have PCI DSS SEQ D
+ * This example is only for MOTO (mail order telephone order) payments
+ * You need to use this plugin with our iFrame solution in order to handle card data
+ */
 $params = array(
     'card_number'       => '4111111111111111',
     'expiration_month'  => '01',
