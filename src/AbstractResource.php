@@ -159,7 +159,6 @@ abstract class AbstractResource
         $client->setOption(CurlClient::TIMEOUT, 30);
         $client->setOption(CurlClient::SSL_VERIFY_PEER, 0);
         $client->setOption(CurlClient::USER_AGENT, 'EveryPay PHP Library ' . Everypay::VERSION);
-        $client->setOption(CurlClient::SSL_VERSION, CURL_SSLVERSION_TLSv1_2);
 
         return $client;
     }
