@@ -86,7 +86,7 @@ Payment::create($params);
 
 ## Documentation
 
-Please see https://www.everypay.gr/api/ for up to date documentation.
+Please see https://docs.everypay.gr/api-reference for up to date documentation.
 
 ## Testing
 
