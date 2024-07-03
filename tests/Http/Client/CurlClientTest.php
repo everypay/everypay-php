@@ -64,6 +64,6 @@ class CurlClientTest extends \PHPUnit_Framework_TestCase
 
     private function createStringFromArray(array $params)
     {
-        return http_build_query($params, null, '&');
+        return http_build_query($params, '', '&');
     }
 }
