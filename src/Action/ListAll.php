@@ -23,7 +23,7 @@ class ListAll extends AbstractAction
         $uri = parent::getResourceUri();
 
         if (!empty($this->params)) {
-            $uri .= '?' . http_build_query($this->params, null, '&');
+            $uri .= '?' . http_build_query($this->params, '', '&');
         }
 
         return $uri;

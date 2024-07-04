@@ -64,7 +64,7 @@ abstract class AbstractAction
 
     private function createStringFromArray(array $params)
     {
-        return http_build_query($params, null, '&');
+        return http_build_query($params, '', '&');
     }
 
     private function resolveOptions($options)
