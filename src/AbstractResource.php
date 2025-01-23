@@ -38,7 +38,8 @@ abstract class AbstractResource
         'transfers',
         'reversals',
         'payouts',
-        'balance'
+        'balance',
+        'issuer-loyalty',
     );
 
     private static $clientOptions = array();
