@@ -26,7 +26,8 @@ abstract class AbstractResource
         'delete',
         'balance',
         'payment',
-        'direct'
+        'direct',
+        'session',
     );
 
     private static $resources = array(
@@ -40,6 +41,7 @@ abstract class AbstractResource
         'payouts',
         'balance',
         'issuer-loyalty',
+        'iris',
     );
 
     private static $clientOptions = array();
