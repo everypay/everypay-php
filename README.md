@@ -82,6 +82,19 @@ $params = array(
 
 Payment::create($params);
 
+/** Example of how to create an IRIS session */
+$sessionParams = array(
+    'amount' => 100,
+    'currency' => 'EUR',
+    'country' => 'GR',
+    'callback_url' => 'https://your-callback_url',
+    'uuid' => '975b48f9-06b0-41f6-98ad-87eb51d7103e',
+    'md' => 'test-md-data',
+    'webhook_url' => 'https://webhook-url'
+);
+
+Iris::session($sessionParams);
+
 ```
 
 ## Documentation
